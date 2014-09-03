@@ -10,8 +10,8 @@ module Api
     respond_to :json
 
     def index
-      #user = User.find_by_reecher_id(params[:user_id])
-      @questions = Question.get_questions(params[:type], current_user)
+      user = User.find_by_reecher_id(params[:user_id])
+      @questions = Question.get_questions(params[:type], user)
 
       render "index.json.jbuilder"
     end
@@ -50,56 +50,8 @@ module Api
     end 
 
     def linked_questions
-      user = User.find_by_reecher_id(params[:user_id])
-      if user.blank?
-        msg = { :status => 401, :message => "Failure!"}
-        render :json => msg
-      end
-      linked_questions = LinkedQuestion.where("user_id = ? and linked_type =? ",user.reecher_id, "LINKED").order("id DESC")
-      if !linked_questions.empty? &&  linked_questions.size >0
-          linked_questions_ary = []
-           purchasedSolutionId =PurchasedSolution.pluck(:solution_id) # get all grab solution id
-            linked_questions.each do |lq|
-             question = Question.find_by_question_id(lq[:question_id]) 
-             solutions = Solution.find_all_by_question_id(lq[:question_id])
-             solutions = solutions.collect!{|i| (i.id).to_s}   
-             @get_linked_by = LinkedQuestion.where("user_id = ? and question_id = ? ", user.reecher_id , lq[:question_id])
-              #question_owner = User.find_by_reecher_id(question.posted_by_uid)
-              if !@get_linked_by.blank?
-                question_owner = User.find_by_reecher_id(@get_linked_by[0]['linked_by_uid'])
-              else
-                msg = { :status => 401, :message => "Failure!"}
-                render :json => msg
-              end
-              question_owner_profile = question_owner.user_profile
-              
-              q_hash = question.attributes if !question.blank?
-              has_solution= purchasedSolutionId & solutions              
-              has_solution.size > 0 ? q_hash[:has_solution] = true : q_hash[:has_solution] = false
-              question.is_stared? ? q_hash[:stared] = true : q_hash[:stared] =false
-              question.avatar_file_name != nil ? q_hash[:image_url] =   question.avatar_url : q_hash[:image_url] = nil
-              q_hash[:owner_location] = question_owner_profile.location
-              q_hash[:question_linked_by_user] = question_owner.full_name
-              question_owner_profile.picture_file_name != nil ? q_hash[:owner_image] =   question_owner_profile.picture_url : q_hash[:owner_image] = nil
-              
-             if !question.avatar_file_name.blank?
-             avatar_geo=((question.avatar_geometry).to_s).split('x') 	
-	           q_hash[:image_width]=avatar_geo[0]	
-	           q_hash[:image_height] = avatar_geo[1] 
-              end
-              
-              linked_questions_ary << q_hash
-            end
-          
-          msg = {:status => 200, :questions => linked_questions_ary}
-           render :json => msg
-      else
-     
-      msg = { :status => 401, :message => "linked Question Not Available!"}
-      render :json => msg
-         
-      end 
-      
+      @questions = Question.where(question_id: LinkedQuestion.where("user_id = ? and linked_type =? ",current_user.reecher_id, "LINKED").order("id DESC").pluck(:question_id))
+      render "index.json.jbuilder"
     end
 
     def link_questions_to_expert
