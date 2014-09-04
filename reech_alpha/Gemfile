@@ -59,7 +59,7 @@ gem "paperclip"
 
 # Point systems
 gem 'recognition'  #to test - no generators available
-gem 'merit'
+gem 'merit', require: 'merit'
 
 # fb friend/graph
 gem 'fb_graph'
