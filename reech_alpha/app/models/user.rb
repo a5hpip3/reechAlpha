@@ -76,6 +76,8 @@ class User < ActiveRecord::Base
 	has_many :purchased_solutions
 	has_many :solutions, :through => :purchased_solutions
 
+	has_many :answered_solutions, class_name: "Solution", primary_key: 'reecher_id', foreign_key: 'solver_id'
+
 	#Messages
 	has_many :messages, class_name: 'Message', foreign_key: 'user_id'
 
