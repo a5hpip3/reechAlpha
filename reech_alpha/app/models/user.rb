@@ -216,4 +216,12 @@ class User < ActiveRecord::Base
   	(user_settings.emailnotif_is_enabled && user_settings.notify_linked_to_question)
   end
 
+  def notify_me_for_help?
+  	(user_settings.pushnotif_is_enabled && user_settings.notify_audience_if_ask_for_help)
+  end
+
+  def notify_me_by_mail_for_help?
+  	(user_settings.emailnotif_is_enabled && user_settings.notify_audience_if_ask_for_help)
+  end
+
 end
