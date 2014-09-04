@@ -123,7 +123,7 @@ ActiveRecord::Schema.define(:version => 20140904103939) do
     t.float    "hi5_count"
     t.float    "curios"
     t.float    "position"
-    t.datetime "current_date"
+    t.date     "current_date"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
   end

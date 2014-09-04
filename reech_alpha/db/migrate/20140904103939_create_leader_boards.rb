@@ -7,7 +7,7 @@ class CreateLeaderBoards < ActiveRecord::Migration
       t.float :hi5_count
       t.float :curios
       t.float :position
-      t.datetime :current_date
+      t.date :current_date
 
       t.timestamps
     end
