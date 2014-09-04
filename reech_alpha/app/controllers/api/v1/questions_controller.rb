@@ -5,7 +5,7 @@ module Api
     require 'thread'
     before_filter :restrict_access , :except =>[:index,:send_apns_notification,:send_gcm_notification]
     before_filter :set_create_params, only: [:create, :post_question_with_image]
-    after_filter :send_notifications, only: [:create]
+    after_filter :send_notifications, only: [:create, :post_question_with_image]
     #doorkeeper_for :all
     respond_to :json
 
@@ -70,23 +70,15 @@ module Api
       render :json =>msg 
     end
   
-    def send_gcm_notification
-        destination = ["APA91bFbYwmetpiv96X1c52tV_sOpT9ZkAZlDyqk1AWKXvwe7bjVUJJ8QwsGB4kkHFt-JiIfIrGh7ScM6ZrTdBe5GCAXkwzncQ4ynAk9zcnVkP5OvYhwVriVcsdgrzfFqZsd4vu6CLoCGMerOP0BH1evR8YqtjcgkA"]#params[:device_token]
-        message_options = {
-        #optional parameters below.  Read the docs here: http://developer.android.com/guide/google/gcm/gcm.html#send-msg
-          :collapse_key => "foobar",
-          :data => { :score => "3x1" },
-          :delay_while_idle => true,
-          :time_to_live => 1,
-          :registration_ids => destination
-        }
-        response = SpeedyGCM::API.send_notification(message_options)
-        msg = { :status => 200, :code => response[:code],:data=>response[:data]}
-        render :json =>msg 
-    end
-    
-    def post_question_with_image   
-      create
+    def post_question_with_image(options = {}, &block)   
+      assign_attributes
+      created = with_callbacks(:create, :save) { entry.save }
+      respond_options = options.reverse_merge(success: created)
+      if entry.errors.any?
+        render json: {status: 403, message: entry.errors}
+      else
+        render json: {status: 200, controller_name => entry, message: (I18n.t "#{controller_name}.#{action_name}.message")}
+      end
     end
     
   #  End for class, modules
@@ -109,7 +101,7 @@ module Api
         if !old_params[:file].blank? 
           params[:question][:avatar] = params[:file]  
         end 
-        params[:audien_details] = JSON.parse(params[:audien_details])
+        params[:audien_details] = JSON.parse(params[:audien_details]) if !params[:audien_details].blank?
 
       else
         if !old_params[:attached_image].blank? 
@@ -170,7 +162,7 @@ module Api
             if audien_user.notify_when_question_linked?
               @question = Question.find_by_question_id(question_id)
               UserMailer.email_linked_to_question(audien_user.email, user, @question).deliver  unless audien_user.email.blank?
-              notify_string ="LINKED,"+ "<" +user.full_name + ">" + ","+ question_id.to_s + "," +Time.now().to_s
+              notify_string ="LINKED,"+ "<" + user.full_name + ">" + ","+ question_id.to_s + "," +Time.now().to_s
               audien_user.devices.each do |d|
                 send_device_notification(d[:device_token].to_s, notify_string ,d[:platform].to_s,user.full_name+PUSH_TITLE_LINKED)
               end
@@ -178,6 +170,21 @@ module Api
           end
         end
       end
+    end
+
+    def send_gcm_notification
+        destination = ["APA91bFbYwmetpiv96X1c52tV_sOpT9ZkAZlDyqk1AWKXvwe7bjVUJJ8QwsGB4kkHFt-JiIfIrGh7ScM6ZrTdBe5GCAXkwzncQ4ynAk9zcnVkP5OvYhwVriVcsdgrzfFqZsd4vu6CLoCGMerOP0BH1evR8YqtjcgkA"]#params[:device_token]
+        message_options = {
+        #optional parameters below.  Read the docs here: http://developer.android.com/guide/google/gcm/gcm.html#send-msg
+          :collapse_key => "foobar",
+          :data => { :score => "3x1" },
+          :delay_while_idle => true,
+          :time_to_live => 1,
+          :registration_ids => destination
+        }
+        response = SpeedyGCM::API.send_notification(message_options)
+        msg = { :status => 200, :code => response[:code],:data=>response[:data]}
+        render :json =>msg 
     end
     
     end
