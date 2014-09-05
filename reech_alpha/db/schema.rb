@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140904125824) do
+ActiveRecord::Schema.define(:version => 20140905080803) do
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -375,8 +375,8 @@ ActiveRecord::Schema.define(:version => 20140904125824) do
     t.string   "fb_token"
     t.string   "fb_uid"
     t.float    "today_position"
-    t.float    "weekly_position"
-    t.float    "monthly_position"
+    t.float    "week_position"
+    t.float    "month_position"
     t.text     "scores"
   end
 
