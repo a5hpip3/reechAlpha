@@ -101,3 +101,5 @@ group :development do
   gem 'debugger'
   #gem 'bullet'
 end
+
+gem 'whenever', :require => false

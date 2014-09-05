@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
 	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids
 	has_merit
 	acts_as_voter
+	serialize :scores, Hash
 
 	include BCrypt
 	include Scrubber
