@@ -70,8 +70,8 @@ Reech::Application.routes.draw do
       get "/profile_dash_board" => "user_profile#profile_dash_board", :as => "profile_dash_board"
       get "/profile_hi5" => "user_profile#profile_hi5", :as=>"profile_hi5"
       post "/add_contact" => "user_profile#add_contact", :as => "add_contact"
-      get "/leader_board" => "user_profile#leader_board", :as => "leader_board"
-      get "user_profile_info" => "user_profile#user_profile_info", :as => "user_profile_info"
+      post "/leader_board" => "user_profile#leader_board", :as => "leader_board"
+      post "user_profile_info" => "user_profile#user_profile_info", :as => "user_profile_info"
 
       resources :user_settings
       post "/view_settings" => "user_settings#view_settings", :as=>"view_settings"
@@ -79,7 +79,7 @@ Reech::Application.routes.draw do
 
       resources :friendships do
         collection do
-          get 'index'
+          post 'index'
           get 'req',:as=>"addfriend"
           get 'accept',:as=>"accept_fr"
           get 'reject',:as=>"reject_fr"
@@ -90,7 +90,7 @@ Reech::Application.routes.draw do
       end
 
      resources :groups
-     get "associate_user_to_group" => "groups#associate_user_to_group", :as=>"associate_user_to_group"
+     post "associate_user_to_group" => "groups#associate_user_to_group", :as=>"associate_user_to_group"
      get "reecher_personal_groups" => "groups#reecher_personal_groups" ,:as =>"reecher_personal_groups"
 
     # resources :authorizations

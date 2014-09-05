@@ -130,7 +130,7 @@ class User < ActiveRecord::Base
   def name
   	full_name
   end
-
+  
   def image_url
   	user_profile.image_url
   end

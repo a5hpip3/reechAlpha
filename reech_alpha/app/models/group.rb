@@ -20,4 +20,6 @@ class Group < ActiveRecord::Base
     errors.add(:member, 'Some members are not friends of the owner') if !(self.member_ids - user.friends.collect(&:id)).empty?
   end
 
+  
+
 end
