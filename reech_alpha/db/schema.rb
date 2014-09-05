@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140904103939) do
+ActiveRecord::Schema.define(:version => 20140904125824) do
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -115,20 +115,6 @@ ActiveRecord::Schema.define(:version => 20140904103939) do
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
   end
-
-  create_table "leader_boards", :force => true do |t|
-    t.integer  "user_id"
-    t.float    "question_count"
-    t.float    "answer_count"
-    t.float    "hi5_count"
-    t.float    "curios"
-    t.float    "position"
-    t.date     "current_date"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
-  end
-
-  add_index "leader_boards", ["user_id"], :name => "index_leader_boards_on_user_id"
 
   create_table "linked_questions", :force => true do |t|
     t.string   "user_id"
@@ -388,6 +374,10 @@ ActiveRecord::Schema.define(:version => 20140904103939) do
     t.integer  "level",                               :default => 0
     t.string   "fb_token"
     t.string   "fb_uid"
+    t.float    "today_position"
+    t.float    "weekly_position"
+    t.float    "monthly_position"
+    t.text     "scores"
   end
 
   add_index "users", ["first_name"], :name => "index_users_on_first_name"

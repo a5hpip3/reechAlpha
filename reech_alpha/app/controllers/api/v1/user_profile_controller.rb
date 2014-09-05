@@ -190,47 +190,7 @@ module Api
 				
 			# leader board
        def leader_board       
-        final_leader = {}
-        @user=User.find_by_reecher_id(params[:user_id])
-        all_friend_of_users= @user.friendships.where(:status =>"accepted").pluck(:friend_reecher_id) if !@user.blank?
-        all_friend_of_users.unshift(@user.reecher_id)
-        all_users = User.where(:reecher_id=>all_friend_of_users) if !all_friend_of_users.empty?
-        if ((!@user.blank?) && (!all_users.blank?))
-        user_details =[]
-        current_user_hash =[]
-         if (!all_users.blank?)
-           all_users.each do |user|
-            @user_profile = user.user_profile 
-            profile_pic_path = (@user_profile.profile_pic_path).to_s
-            if @user_profile.picture_file_name
-             image_url =  @user_profile.picture_url      
-            elsif @user_profile.profile_pic_path
-              image_url = profile_pic_path
-            else
-              image_url = nil
-            end        
-            tot_question = get_user_total_question user.reecher_id
-            tot_answer = get_user_total_solution user.reecher_id
-            tot_hi5 = user.user_profile.votes_for.size 
-            tot_curios = user.points
-           # position = ((0.3 * tot_curios) + (0.7*tot_hi5)).floor
-           #(15%)Total curios + (20%)# of questions asked + (30%)# of solutions provided + (35%)# of hi5 received
-            position = ((0.15 * tot_curios) + (0.2* tot_question) + (0.3*tot_answer) + (0.35*tot_hi5))          
-            user_details.push({"position" => position,"reecherid"=>user.reecher_id,"reechername"=>user.first_name+" "+ user.last_name,"reecherimage"=>image_url,"level"=>7,"scores"=> {"points_earned" => tot_curios ,"questions_asked" =>tot_question, "answers_given" =>tot_answer,"high_fives" =>tot_hi5}})
-          end
-         end
-         
-        current_user_hash =   user_details.select{ |hsh| hsh  if hsh.has_value? params[:user_id]}
-        sort_user_detail = user_details.sort_by{ |h| h["position"]}.reverse
-        sort_user_detail=sort_user_detail.take(5)
-        final_leader[:today]= {"user_position"=>current_user_hash,"top_positions"=> sort_user_detail}
-        final_leader[:week]= {"user_position"=>current_user_hash,"top_positions"=> sort_user_detail}
-        final_leader[:month] = {"user_position"=>current_user_hash,"top_positions"=> sort_user_detail}
-        msg = { :status => 200, :message => "Success",:leader_detail=>final_leader}
-        else
-        msg = { :status => 401, :message => "Failure"}  
-        end  
-        render :json => msg
+        render "leader_board.json.jbuilder"        
       end
 
       
