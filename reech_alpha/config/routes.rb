@@ -65,7 +65,7 @@ Reech::Application.routes.draw do
       get "/connections" => "user_profile#showconnections", :as=>"connections"
       post "/changepassword" => "user_profile#changepass", :as=>"changepassword"
       post "/forgetpassword" => "user_profile#forget_password", :as=>"forgetpassword"
-      get "/profile" => "user_profile#index", :as=>"profile"
+      post "/profile" => "user_profile#index", :as=>"profile"
       post "/update_profile" => "user_profile#update", :as => "update_profile"
       get "/profile_dash_board" => "user_profile#profile_dash_board", :as => "profile_dash_board"
       get "/profile_hi5" => "user_profile#profile_hi5", :as=>"profile_hi5"
