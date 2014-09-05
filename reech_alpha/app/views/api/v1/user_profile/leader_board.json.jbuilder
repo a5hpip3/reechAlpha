@@ -17,7 +17,7 @@ json.leader_detail do
 	   		   json.position user[type+'_position']
 	   		   json.reechername user.full_name
 	   		   json.reecherimage user.image_url
-	   		   json.level user.level
+	   		   json.level 7
 	   		   json.scores user.scores[type]
    	     end
    	  end

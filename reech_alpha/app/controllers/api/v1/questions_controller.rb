@@ -3,49 +3,35 @@ module Api
     class QuestionsController < ApiController
     #http_basic_authenticate_with name: "admin", password "secret"
     require 'thread'
-    before_filter :restrict_access , :except =>[:index,:send_apns_notification,:send_gcm_notification]
+    before_filter :restrict_access , :except =>[:send_apns_notification,:send_gcm_notification]
     before_filter :set_create_params, only: [:create, :post_question_with_image]
     after_filter :send_notifications, only: [:create, :post_question_with_image]
     #doorkeeper_for :all
     respond_to :json
 
     def index
-      user = User.find_by_reecher_id(params[:user_id])
-      @questions = Question.get_questions(params[:type], user)
+      @questions = Question.get_questions(params[:type], current_user)
 
       render "index.json.jbuilder"
     end
 
     def show
-        @question = Question.find(params[:id])
-        @solutions = Solution.filter(@question, current_user)
-        @allsolutions = @question.posted_solutions
-        respond_with @question, @solutions, @allsolutions
+        question = Question.find(params[:id])
+        solutions = Solution.filter(question, current_user)
+        allsolutions = question.posted_solutions
+        respond_with question, solutions, allsolutions
     end
 
     def mark_question_stared
-      @question = Question.find_by_question_id(params[:question_id])      
-      if params[:stared] == "true"
+      @question = Question.find_by_question_id(params[:question_id])
+      if !@question.blank?
         @voting = Voting.where(user_id: current_user.id, question_id: @question.id).first
-        if @voting.blank?
-        @voting = Voting.new do |v|
-                  v.user_id = current_user.id
-                  v.question_id = @question.id
-                end
-        @voting.save ? msg = {:status => 200, :message => "Successfully Stared",:is_login_user_starred_qst=>true} : msg = {:status => 401, :message => "Failed!",:is_login_user_starred_qst=>false}
-       else
-        msg = {:status => 200, :message => "Already Stared",:is_login_user_starred_qst=>true}
-       end  
-      elsif params[:stared] == "false"
-        @voting = Voting.where(user_id: current_user.id, question_id: @question.id).first
-        if @voting.present?
-          @voting.destroy
-          @voting.destroyed? ? msg = {:status => 200, :message => "Successfully UnStared",:is_login_user_starred_qst=>false} : msg = {:status => 401, :message => "Failed!",:is_login_user_starred_qst=>false}
-        else
-          msg = {:status => 200, :message => "Already UnStared",:is_login_user_starred_qst=>false}
-        end 
-      end
-      logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{ msg}" 
+        @question.votings.create(user_id: current_user.id) if(params[:stared] == "true" && @voting.blank?)
+        @voting.destroy if(params[:stared] == "false" && @voting.present?)
+        msg = {:status => 200, :message => (params[:stared] == "true" ? "Successfully Stared" : "Successfully UnStared"),:is_login_user_starred_qst=> (params[:stared] == "true" ? true : false)}
+      else
+        msg = {:status => 404, :message => "Failed!",:is_login_user_starred_qst=>false}
+      end      
       render :json => msg 
     end 
 
