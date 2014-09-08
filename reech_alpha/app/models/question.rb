@@ -2,7 +2,7 @@ class Question < ActiveRecord::Base
   include Scrubber
   has_merit
 
-  attr_accessible :post,:id, :posted_by, :posted_by_uid,:question_id, :points, :Charisma, :avatar, :has_solution, :stared, :image_url, :audien_user_ids, :category_id
+  attr_accessible :post,:id, :posted_by, :posted_by_uid,:question_id, :points, :Charisma, :avatar, :has_solution, :stared, :image_url, :audien_user_ids, :category_id, :ups, :downs, :is_public
   has_attached_file :avatar, :styles => {:medium => "300x300>", :thumb => "100x100>" }, :default_url => "/images/:style/missing.png" ,:default_style => :original
   serialize :audien_user_ids, Array
   #do_not_validate_attachment_file_type :avatar
