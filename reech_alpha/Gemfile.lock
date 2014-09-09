@@ -1,12 +1,12 @@
 PATH
-  remote: vendor/plugins/gcm-0.0.7
+  remote: lib/plugins/gcm-0.0.7
   specs:
     gcm (0.0.7)
       httparty
       json
 
 PATH
-  remote: vendor/plugins/pushmeup-0.2.0
+  remote: lib/plugins/pushmeup-0.2.0
   specs:
     pushmeup (0.2.0)
       httparty
