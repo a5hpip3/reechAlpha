@@ -13,16 +13,14 @@ Category.create(:title => "Entertainment")
 
 # InsertCategoryTocategoryMasterTable
 Category.create([{:title => "Arts & Culture"},
+    {:title => "Cars & Bikes"},
     {:title => "Community Events"},
-    {:title => "Education"},
+    {:title => "Education & Hobbies"},
     {:title => "Family & Pets"},
+    {:title => "Financial"},
     {:title => "Food & Dining"},
-    {:title => "Health"},
+    {:title => "Health, Sports & Fitness"},
     {:title => "Home Improvement"},
-    {:title => "Personal Services"},
-    {:title => "Professional Services"},
-    {:title => "Real Estate"},
-    {:title => "Arts & Culture"},
-    {:title => "Sports & Rec"},
+    {:title => "Personal & Professional Services"},
     {:title => "Technology"},
-    {:title => "Other"}])
+    {:title => "Travel & Other"}])
