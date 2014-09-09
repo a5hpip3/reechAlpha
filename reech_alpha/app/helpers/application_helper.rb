@@ -4,28 +4,17 @@ module ApplicationHelper
     mailbox_name == 'inbox' ? message.sender : message.recipient_list.join(', ')
   end
 
-  def send_device_notification device_token,message,platform,title="Title"
-     
-     puts "device_token=#{device_token}"
-     puts "message123=#{message}"
-     puts "platform=#{platform}"
-     puts "title===#{title.inspect}"      
-            
-    if platform == 'iOS' 
-      puts "I am in iOS mobile notification"
+  def send_device_notification device_token,message,platform,title="Title"          
+    if platform == 'iOS'      
       n1= APNS::Notification.new(device_token, :alert => title, :badge => 1, :sound => 'default',:other=>{:message=>message,:title=>title,:badge => 1})
-      APNS.send_notifications([n1])
-      puts "iOS response ==#{response.inspect}"
-    elsif platform =='Android'
-      puts "I am in Android mobile notification"
+      APNS.send_notifications([n1])    
+    elsif platform =='Android'      
       require 'gcm'
       gcm = GCM.new("AIzaSyA8LPahDEVgdPxCU4QrWOh1pF_IL655LNI")
       registration_ids= [device_token] # an array of one or more client registration IDs
       options = {data: {payload_body:message ,message: title ,title:"Reech"}, collapse_key: "Reech",time_to_live:3600}
-      response = gcm.send_notification(registration_ids, options)
-      #puts "response==#{response.inspect}"
+      response = gcm.send_notification(registration_ids, options)      
     end
-
   end
 
   def check_notify_question_when_answered user_id
