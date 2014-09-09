@@ -58,7 +58,7 @@ Reech::Application.routes.draw do
       post "purchase_solution" =>"solutions#purchase_solution", :as => "purchase_solution"
       post "get_solution_details" =>"solutions#get_solution_details", :as => "get_solution_details"
       post "question_details_with_solutions" =>"solutions#question_details_with_solutions", :as => "question_details_with_solutions"
-      post "post_solution_with_image" =>"solutions#post_solution_with_image", :as => "post_solution_with_image"
+      post "post_solution_with_image" =>"solutions#create", :as => "post_solution_with_image"
 
 
       resources :user_profile
