@@ -12,14 +12,13 @@ class NotifyUsersWorker
     	linked_question = qust_details.linked_questions.find_by_user_id(current_user.reecher_id)
     	linked_by_user = linked_question.linked_by unless linked_question.nil?
     	question_owner_friends = question_owner.friends.pluck(:reecher_id)
-    	owner_settings = question_owner.user_settings 
-    	check_setting = (owner_settings.pushnotif_is_enabled && owner_settings.notify_question_when_answered)
-      check_email_setting = (owner_settings.emailnotif_is_enabled && owner_settings.notify_question_when_answered)
-    	if check_email_setting
+    	owner_settings = question_owner.user_settings
+    	
+      if (owner_settings.emailnotif_is_enabled && owner_settings.notify_question_when_answered)
     		UserMailer.email_question_when_answered(question_owner.email, current_user, qust_details).deliver  unless question_owner.email.blank?
     	end        
       # Send push notification
-      if check_setting            
+      if (owner_settings.pushnotif_is_enabled && owner_settings.notify_question_when_answered)            
       	device_details = Device.select("device_token,platform").where("reecher_id=?", question_owner.reecher_id.to_s)
 
       	if ( !linked_question.nil? && (!question_owner_friends.include? current_user.reecher_id))            
