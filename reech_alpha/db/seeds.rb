@@ -7,20 +7,19 @@
 #   Mayor.create(:name => 'Emanuel', :city => cities.first)
 
 # CreateCategories 
-Category.create(:title => "News")
-Category.create(:title => "Sports")
-Category.create(:title => "Entertainment")
-
 # InsertCategoryTocategoryMasterTable
 Category.create([{:title => "Arts & Culture"},
     {:title => "Cars & Bikes"},
     {:title => "Community Events"},
     {:title => "Education & Hobbies"},
+    {:title => "Entertainment"},
     {:title => "Family & Pets"},
     {:title => "Financial"},
     {:title => "Food & Dining"},
     {:title => "Health, Sports & Fitness"},
     {:title => "Home Improvement"},
+    {:title => "News"},
     {:title => "Personal & Professional Services"},
+    {:title => "Sports"},
     {:title => "Technology"},
     {:title => "Travel & Other"}])
