@@ -3,39 +3,39 @@ module Api
 		class UsersController < ApiController
 		respond_to :json ,:except =>[:send_apns_notification,:send_gcm_notification,:validate_referral_code]
 			#http_basic_authenticate_with name: "admin", password: "secret"
-			
+
 
 			def create
-        
-				if !params.blank?			  
+
+				if !params.blank?
 				    #invite_user_id = check_ref_code[:invite_user_id]
            # link_question_id = check_ref_code[:link_question_id]
-				  
+
       					if params[:provider] == "standard"
       					  original_phone_number = params[:user_details][:phone_number]
       					  phone_number = filter_phone_number(params[:user_details][:phone_number])
-      					  user = User.find_by_phone_number(phone_number)				  
+      					  user = User.find_by_phone_number(phone_number)
         						if user.nil?
-        						 check_ref_code = validate_referral_code2 params[:referral_code] 
+        						 check_ref_code = validate_referral_code2 params[:referral_code]
         						  check_ref_code_is_valid = check_ref_code[:is_valid]
-        						 if check_ref_code_is_valid         
+        						 if check_ref_code_is_valid
                        invite_user_id = check_ref_code[:invite_user_id]
                        link_question_id = check_ref_code[:link_question_id]
         						# Start Here
-        								@user = User.new(params[:user_details])								
+        								@user = User.new(params[:user_details])
         								@user.original_phone_number = original_phone_number
         								@user.phone_number = phone_number
         								@user.password_confirmation = params[:user_details][:password]
         											if @user.save
               								make_auto_connection_with_referral_code @user.reecher_id, invite_user_id,link_question_id if params[:referral_code].to_i  != 1111
-                   								if !params[:profile_image].blank? 
+                   								if !params[:profile_image].blank?
                   										data = StringIO.new(Base64.decode64(params[:profile_image]))
                   										@user.user_profile.picture = data
                   										@user.user_profile.save
                   									end
-                  	  							
+
                   	  							@api_key = ApiKey.create(:user_id => @user.reecher_id).access_token
-                  	  							
+
                   									create_device_for_user(params[:device_token], params[:platform], @user.reecher_id)
                   									msg = {:status => 200, :message => "Success",:api_key=>@api_key, :user_id=>@user.reecher_id,:email =>@user.email,:phone_number =>@user.phone_number.to_i }
                   									#logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
@@ -45,18 +45,18 @@ module Api
               									#logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
               									#render :json => msg  # note, no :location or :status option
               								end
-              				# END here 	
+              				# END here
               				else
               				    msg = { :status => 401, :message => "Can't signup. Please use new invitation code."}
-              				end 			
+              				end
         					 	else
         						   #@api_key = ApiKey.create(:user_id => user.reecher_id).access_token
         							 #msg = { :status => 401, :message => "Email Already exists",:api_key=>@api_key, :user_id=>user.reecher_id,:email =>user.email}
         							 msg = { :status => 401, :message => "Phone number Already exists"}
         							 #logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
         							# render :json => msg
-        						end   
-        					     
+        						end
+
       					elsif params[:provider] == "facebook"
       						fb_user = User.find_by_fb_uid(params[:user_details][:uid])
       						@graph = Koala::Facebook::API.new(params[:user_details][:access_token])
@@ -64,24 +64,26 @@ module Api
       						@profile = @graph.get_object("me")
       						puts "Facebook user profile=#{@profile.inspect}"
       						@fb_friends = @graph.get_connections("me", "friends")
-                  if fb_user.nil?  
-                    
-                     check_ref_code = validate_referral_code2 params[:referral_code] 
+                  if fb_user.nil?
+
+                     check_ref_code = validate_referral_code2 params[:referral_code]
                       check_ref_code_is_valid = check_ref_code[:is_valid]
-                     if check_ref_code_is_valid         
+                     if check_ref_code_is_valid
                        invite_user_id = check_ref_code[:invite_user_id]
                        link_question_id = check_ref_code[:link_question_id]
                   				@user = User.new()
             							@user.first_name = @profile["first_name"]
             							@user.last_name = @profile["last_name"]
             							@user.email = @profile["email"]
-            							#@user.phone_number = @profile["phone"]  							
+            							#@user.phone_number = 0000000000
             							@user.fb_token = params[:user_details][:access_token]
             							@user.fb_uid = params[:user_details][:uid]
-              							if @user.save(:validate => false)		
+													@user.password = rand(10_000_000 - 1_000_000).to_s
+													@user.password_confirmation = @user.password
+              							if @user.save()
               							  @user.user_profile.picture_from_url(fb_user_profile_pic_path.to_s)
               							  if ((!@profile["location"].blank?) && (!@profile["location"]["name"].blank?))
-              							  @user.user_profile.location = @profile["location"]["name"] 
+              							  @user.user_profile.location = @profile["location"]["name"]
               							  end
               							  @user.user_profile.save
               							    make_auto_connection_with_referral_code @user.reecher_id, invite_user_id ,link_question_id if params[:referral_code].to_i  != 1111
@@ -92,20 +94,20 @@ module Api
                                 	make_friendship(@fb_friends,@user,params[:device_token]) if @fb_friends.size > 0
                   								create_session_for_fb_user(@user)
                   								Authorization.create(:user_id => @user.id, :uid => params[:user_details][:uid], :provider => params[:provider])
-                  								
+
                   								@api_key = ApiKey.create(:user_id => @user.reecher_id).access_token
                   								msg = {:status => 201, :api_key=>@api_key, :user_id=>@user.reecher_id,:email=>@user.email}
                   								#logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
                   								#render :json => msg
-                								
+
               						 else
                             msg = { :status => 401, :message => @user.errors.full_messages}
                            # logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
                            # render :json => msg  # note, no :location or :status option
-              						 end 
+              						 end
           					 	else
           					 	   msg = { :status => 401, :message => "Can't signup. Please use new invitation code."}
-          					 	end  
+          					 	end
                        # logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
                        # render :json => msg  # note, no :location or :status option
       					else
@@ -117,19 +119,19 @@ module Api
       							msg = {:status => 201, :api_key=>@api_key, :user_id=>fb_user.reecher_id,:email=>fb_user.email}
       							#logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
       							#render :json => msg
-      					end 
-      		end  
+      					end
+      		end
         #logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
-        render :json => msg  
-    		else 
+        render :json => msg
+    		else
   			msg = { :status => 401, :message => "Failure!"}
   			logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
   			render :json => msg
-  			end      
-       
+  			end
+
 			end
 
-			
+
 			def show
 				@user=current_user
 				respond_to do |format|
@@ -147,10 +149,10 @@ module Api
 						device.platform = platform
 						device.reecher_id = reecher_id
 						device.save
-					end  
-				end  
+					end
+				end
 			end
-				
+
 			def create_session_for_fb_user(user)
 				user.reset_persistence_token!
 			   	UserSession.create(user, true)
@@ -159,19 +161,19 @@ module Api
           #@user_session.phone_number = user.email
          # @user_session.password = user.password
          # @user_session.save
-          
-          
-			end  
+
+
+			end
 
 			def make_friendship(fb_friends, fb_user,device_token)
-=begin			 
+=begin
 			  puts "fb_friends=#{fb_friends}"
 			  puts "fb_user=#{fb_user}"
 			  puts "device_token=#{device_token}"
 				 n1 = APNS::Notification.new(device_token, 'Hello iPhone!' )
          n2 = APNS::Notification.new(device_token, :alert => 'Hello iPhone!', :badge => 1, :sound => 'default')
          APNS.send_notifications([n2])
-=end        
+=end
          #APNS.send_notification(device_token, 'Hello iPhone!' )
         fb_friends_list_uids = []
         fb_friends.select {|fu| fb_friends_list_uids << fu["id"] }
@@ -180,37 +182,37 @@ module Api
 					if !fb_user_existed.blank?
 						if Friendship.request(fb_user_existed, fb_user)
 							Friendship.accept(fb_user_existed, fb_user)
-						end  
-					end 
-				end  
-			 end   
-        
-      
-    def send_apns_notification 
+						end
+					end
+				end
+			 end
+
+
+    def send_apns_notification
       n1= APNS::Notification.new(params[:device_token], :alert => params[:message], :badge => 1, :sound => 'default')
       APNS.send_notifications([n1])
-      
+
        msg = { :status => 200, :message => params[:message]}
-       render :json =>msg 
-    end 
-  
-=begin    
-    def send_gcm_notification  
-     puts "Device token===#{params[:device_token]}" 
+       render :json =>msg
+    end
+
+=begin
+    def send_gcm_notification
+     puts "Device token===#{params[:device_token]}"
      destination= params[:device_token]
      data1 = {:key => "Hello"}
     # must be an hash with all values you want inside you notification
      options1 = {:collapse_key => "placar_score_global", :time_to_live => 3600, :delay_while_idle => false}
     # options for the notification
      #n1 = GCM.Notification(destination, data1, options1)
-    #data = {:alert => "Hello Android!!!" } 
+    #data = {:alert => "Hello Android!!!" }
     # GCM.send_notification( destination,{"key" =>"HELLO WORLD"} )
       GCM.send_push_as_plain_text
       GCM.send_notification( destination,data1,options1 )
      # msg = { :status => 401, :message => "success"}
      # render :json =>msg
     end
-=end    
+=end
      # Method Send reech requests
       def send_reech_request
       @user = User.find_by_reecher_id(params[:user_id])
@@ -219,77 +221,76 @@ module Api
         if !params[:audien_details][:emails].blank?
           puts "  I am in audeince Email block"
           Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], @user, 0,PUSH_TITLE_INVITE,"INVITE","INVITE"}
-             
+
         end
-        if !params[:audien_details][:phone_numbers].blank?       
-          puts "  I am in audeince Phone block"   
+        if !params[:audien_details][:phone_numbers].blank?
+          puts "  I am in audeince Phone block"
           Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], @user, 0,PUSH_TITLE_INVITE,"INVITE","INVITE"}
         end
-      # End of outer condition  
+      # End of outer condition
       end
       msg = { :status => 200, :message => "success"}
-      render :json =>msg 
+      render :json =>msg
      end
-  
+
     def remove_connections
         my_connection =Friendship.where("reecher_id=? && friend_reecher_id =? ", params[:user_id],params[:friend_id]).first
         friend_connection = Friendship.where("reecher_id=? && friend_reecher_id =? ", params[:friend_id],params[:user_id]).first
         my_connection.destroy unless  my_connection.blank?
         friend_connection.destroy unless  friend_connection.blank?
         msg = {:status => 200, :messgae => "User is removed from your connection" }
-        render :json => msg  
+        render :json => msg
     end
-    
+
     def validate_referral_code
       current_date_time =Time.now
       referral_code = params[:referral_code]
       user_ref =InviteUser.where("referral_code = ? AND token_validity_time >= ? AND status =1", params[:referral_code] ,current_date_time)
-      
-      if !user_ref.blank? 
-      link_question = LinkedQuestion.find(user_ref[0][:linked_question_id]) 
+
+      if !user_ref.blank?
+      link_question = LinkedQuestion.find(user_ref[0][:linked_question_id])
       msg = {:status => 200, :is_valid => true,:question_id=>link_question.question_id ,:invite_user_id=>user_ref[0][:id]}
       elsif params[:referral_code].to_i == 1111
-      msg = {:status => 200, :is_valid => true }  
+      msg = {:status => 200, :is_valid => true }
       else
       msg = {:status => 200, :is_valid => false }
-      end 
-      render :json => msg 
-      
+      end
+      render :json => msg
+
     end
-      
+
    def validate_referral_code2 referral_code
       current_date_time =Time.now
       referral_code = referral_code
       user_ref =InviteUser.where("referral_code = ? AND token_validity_time >= ? AND status =1", referral_code ,current_date_time)
       puts "user_ref===#{user_ref.inspect}"
-      if !user_ref.blank? 
-        link_question = LinkedQuestion.find(user_ref[0][:linked_question_id]) 
+      if !user_ref.blank?
+        link_question = LinkedQuestion.find(user_ref[0][:linked_question_id])
         msg = {:status => 200, :is_valid => true,:question_id=>link_question.question_id,:link_question_id=> user_ref[0][:linked_question_id],:invite_user_id=>user_ref[0][:id]}
       elsif params[:referral_code].to_i == 1111
-        msg = {:status => 200, :is_valid => true }  
+        msg = {:status => 200, :is_valid => true }
       else
         msg = {:status => 401, :is_valid => false }
-      end 
-      msg 
-      
+      end
+      msg
+
     end
-      
+
     def make_auto_connection_with_referral_code reecher_id, invite_user_id,link_question_id
       puts "invite_user_id==#{invite_user_id}"
       puts "invite_user_id==#{link_question_id}"
       current_date_time =Time.now
       msg=''
       updateInviteUser =InviteUser.find(invite_user_id)
-      link_question = LinkedQuestion.find(link_question_id) 
+      link_question = LinkedQuestion.find(link_question_id)
       if !updateInviteUser.blank?
-      make_friendship_standard(reecher_id, link_question.linked_by_uid)   
-      link_question.update_attributes(:user_id=>reecher_id) 
-      updateInviteUser.update_attributes(:status=>0) 
-      end 
-       
-    end  
+      make_friendship_standard(reecher_id, link_question.linked_by_uid)
+      link_question.update_attributes(:user_id=>reecher_id)
+      updateInviteUser.update_attributes(:status=>0)
+      end
+
+    end
    #End of Class User Controller class
   		end
 	end
 end
-
