@@ -245,7 +245,7 @@ module Api
         current_user_is_linked_to_question = question.linked_questions.pluck(:user_id).include? current_user.reecher_id
         current_user_friend_with_question_owner = Friendship::are_friends(current_user.reecher_id, question.user.reecher_id)    
         
-        if (current_user_is_owner|| question.is_public || (current_user_is_linked_to_question && current_user_friend_with_question_owner))
+        if (current_user_is_owner|| (current_user_is_linked_to_question && current_user_friend_with_question_owner)) # || question.is_public
            question[:question_referee] = question_owner.full_name   
            question[:no_profile_pic] = false      
            question.user.user_profile.picture_file_name != nil ? question[:owner_image] = question.user.user_profile.thumb_picture_url : question[:owner_image] = nil
@@ -264,6 +264,7 @@ module Api
           solution.wrote_by.user_profile.picture_file_name != nil ? solution_attrs[:solver_image] = solution.wrote_by.user_profile.thumb_picture_url : solution_attrs[:solver_image] = nil
           solution.picture_file_name != nil ? solution_attrs[:image_url] = solution.picture_url : solution_attrs[:image_url] = nil
           solver_friend_with_current_user = Friendship::are_friends(current_user.reecher_id, solution.solver_id)
+          solver_friend_with_question_owner = Friendship::are_friends(question.user.reecher_id, solution.solver_id)
           solution_attrs[:purchased] = PurchasedSolution.where(:user_id => current_user.id, :solution_id => solution.id).exists?
           current_user_is_solver = (current_user.reecher_id == solution.solver_id)            
           if !solution.picture_file_name.blank?
@@ -277,26 +278,19 @@ module Api
 
           if solution_attrs[:purchased] || current_user_is_solver
             solution_attrs[:solution_provider_name] = solution.wrote_by.full_name
-          elsif  current_user_is_owner
-            if question.is_public || post_question_to_friends.include?(solution.solver_id) || solver_friend_with_current_user
+          else
+            if solver_friend_with_question_owner # || question.is_public
               solution_attrs[:solution_provider_name] = solution.wrote_by.full_name
-            elsif linked_by = (post_question_to_friends & question.linked_questions.pluck(:linked_by_uid)).present?
-              linked_by_user = User.find_by_reecher_id(linked_by[0])
-              solution_attrs[:solution_provider_name] = "Friend of #{linked_by_user.full_name}" 
+            elsif !(link = question.linked_questions.where(user_id: current_user.reecher_id)).blank? || !(link = (question.user.friends & solution.wrote_by.friends).first).blank?
+              link = link.linked_by unless question.linked_questions.where(user_id: current_user.reecher_id).blank?
+              solution_attrs[:solution_provider_name] = "Friend of #{link.full_name}" 
               solution_attrs[:solver_image] = nil
-              solution_attrs[:solver_image] = linked_by_user.user_profile.picture_file_name != nil ? linked_by_user.user_profile.thumb_picture_url : nil 
+              solution_attrs[:solver_image] = link.user_profile.picture_file_name != nil ? link.user_profile.thumb_picture_url : nil 
             else
               solution_attrs[:solution_provider_name] = "Friend"
               solution_attrs[:no_profile_pic] = true
               solution_attrs[:profile_pic_clickable] = false
-            end
-          else  
-            if question.is_public || solver_friend_with_current_user
-              solution_attrs[:solution_provider_name] = solution.wrote_by.full_name  
-            elsif current_user_friend_with_question_owner
-              solution_attrs[:solution_provider_name] =  "Friend of #{question.user.full_name}"           
-              solution_attrs[:solver_image] = question.user.user_profile.picture_file_name != nil ? question.user.user_profile.thumb_picture_url : nil
-            end
+            end          
           end        
           result << solution_attrs
         end
