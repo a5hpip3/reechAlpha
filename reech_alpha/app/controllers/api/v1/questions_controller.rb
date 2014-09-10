@@ -45,10 +45,11 @@ module Api
       puts "link_questions_to_expert==#{params.inspect}"
       if !@question.blank?
       # Outer if condition    
-          if !params[:audien_details].nil?            
-             Thread.new{link_questions_to_expert_for_users params[:audien_details] , current_user,@question.question_id}
-             Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
-             Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
+          if !params[:audien_details].nil?
+            QuestionsWorker.perform_async(action_name, params[:audien_details], current_user.id, @question.id, PUSH_TITLE_LINKED, "LINKED", "LINKED")            
+             # Thread.new{link_questions_to_expert_for_users params[:audien_details] , current_user,@question.question_id}
+             # Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
+             # Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
           end
       # end of outer  if loop
       end
@@ -105,55 +106,16 @@ module Api
 
     def send_notifications
       if !params[:audien_details].nil?
-        Thread.new{send_posted_question_notification_to_reech_users params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
-        Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
-        Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
+        QuestionsWorker.perform_async(action_name, params["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
+        #Thread.new{send_posted_question_notification_to_reech_users params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
+        #Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
+        #Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
       end
       post_quest_to_frnd = []
       if !post_quest_to_frnd.blank? 
         post_quest_to_frnd.each do|pqf|                 
           @pqtf= PostQuestionToFriend.find(pqf)                 
           @pqtf.update_attributes(:question_id=>entry.question_id) 
-        end
-      end
-    end
-
-    def send_posted_question_notification_to_reech_users audien_details ,user,question,push_title_msg,push_contant_str,linked_quest_type
-      reecher_ids = params[:audien_details][:reecher_ids]
-      @post_quest_to_frnd =[]
-      if(!audien_details.blank? && audien_details.has_key?("reecher_ids") && !audien_details[:reecher_ids].empty?)
-        User.where(reecher_id: reecher_ids).each do |audien_user|
-          pqtf = PostQuestionToFriend.create(user_id: user.reecher_id, friend_reecher_id: audien_user.reecher_id, question_id: question.question_id)
-          @post_quest_to_frnd << pqtf.id
-          if audien_user.notify_me_for_help?
-            notify_string = push_contant_str + "," + "<"+user.full_name + ">" + "," + question.question_id.to_s + "," + Time.now().to_s
-            Device.where(reecher_id: audien_user.reecher_id).each do |d|
-              send_device_notification(d.device_token.to_s, notify_string, d.platform.to_s, user.full_name+push_title_msg)
-            end
-          end
-
-          if audien_user.notify_me_by_mail_for_help?
-            UserMailer.send_question_details_to_audien(audien_user.email, audien_user.first_name,question, user).deliver if audien_user.email !=nil
-          end
-        end
-      end
-    end
-
-    def link_questions_to_expert_for_users audien_details ,user,question_id
-      reecher_ids = params[:audien_details][:reecher_ids]
-      if !reecher_ids.blank?
-        User.where(reecher_id: reecher_ids).each do |audien_user|
-          if !audien_user.linked_with_question?(question_id, user)
-            audien_user.linked_questions.create(question_id: question_id, linked_by_uid: user.reecher_id, email_id: audien_user.email, phone_no: audien_user.phone_number,:linked_type=>'LINKED')
-            if audien_user.notify_when_question_linked?
-              @question = Question.find_by_question_id(question_id)
-              UserMailer.email_linked_to_question(audien_user.email, user, @question).deliver  unless audien_user.email.blank?
-              notify_string ="LINKED,"+ "<" + user.full_name + ">" + ","+ question_id.to_s + "," +Time.now().to_s
-              audien_user.devices.each do |d|
-                send_device_notification(d[:device_token].to_s, notify_string ,d[:platform].to_s,user.full_name+PUSH_TITLE_LINKED)
-              end
-            end
-          end
         end
       end
     end
