@@ -156,7 +156,7 @@ module Api
 
 
       def user_profile_info
-      	@user_profile = User.find_by_reecher_id(params[:user_profile_id] == 'undefined' ? params[:user_id] : params[:user_profile_id])
+      	@user_profile = User.find_by_reecher_id(params[:user_profile_id].present? ? params[:user_id] : params[:user_profile_id])
       	render "user_profile_info.json.jbuilder"
      	end
 
