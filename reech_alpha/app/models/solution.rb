@@ -18,39 +18,42 @@ class Solution < ActiveRecord::Base
 	has_many :users, :through => :purchased_solutions
 	has_many :preview_solutions
 
-  validates_attachment :picture, :content_type => { :content_type => "image/jpeg" } , unless: Proc.new { |record| record[:picture].nil? }
+	validates_attachment :picture, :content_type => { :content_type => "image/jpeg" } , unless: Proc.new { |record| record[:picture].nil? }
+	after_create :notify_users
+  scope :public, -> {where(is_public: true)}
+	def buy(soln)
+		solution.ask_charisma = soln
+	end
 
-
-def buy(soln)
-	solution.ask_charisma = soln
-
-end
-
-def self.filter(question, current_user)
-	solns = []
-	allsolutions = question.posted_solutions
-	allsolutions.each do |answer|
-		if answer.users.exists?(current_user)
-			solns = solns + answer
+	def self.filter(question, current_user)
+		solns = []
+		allsolutions = question.posted_solutions
+		allsolutions.each do |answer|
+			if answer.users.exists?(current_user)
+				solns = solns + answer
+			end
 		end
 	end
-end
 
-def picture_url
-	picture.url(:medium)
-end
+	def picture_url
+		picture.url(:medium)
+	end
 
-def picture_original_url
-  picture.url(:original)
-end
-def picture_thumb_url
-  picture.url(:thumb)
-end
+	def picture_original_url
+		picture.url(:original)
+	end
+	def picture_thumb_url
+		picture.url(:thumb)
+	end
 
-def sol_pic_geometry(style = :medium)
-  @geometry ||= {}
-  photo_path = (picture.options[:storage] == :s3) ? picture.url(style) : picture.path(style)
-  @geometry[style] ||= Paperclip::Geometry.from_file(photo_path)
-end	
+	def sol_pic_geometry(style = :medium)
+		@geometry ||= {}
+		photo_path = (picture.options[:storage] == :s3) ? picture.url(style) : picture.path(style)
+		@geometry[style] ||= Paperclip::Geometry.from_file(photo_path)
+	end
+
+	def notify_users 	
+		NotifyUsersWorker.perform_async(self.id)     
+	end	
 
 end
