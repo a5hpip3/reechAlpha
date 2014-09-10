@@ -4,18 +4,18 @@ Reech::Application.routes.draw do
 
     namespace :v1 do
 
-      resources :users
+      #resources :users
       post "signup" => "users#create", :as => "signup"
-      post "/send_apns_notification" => "users#send_apns_notification", :as => "send_apns_notification"
+      #post "/send_apns_notification" => "users#send_apns_notification", :as => "send_apns_notification"
       post "send_reech_request" => "users#send_reech_request", :as => "send_reech_request"
       post "remove_connections" => "users#remove_connections", :as => "remove_connections"
       post "validate_referral_code" => "users#validate_referral_code", :as => "validate_referral_code"
 
 
-      resources :user_sessions
+      #resources :user_sessions
       post "logout_user" => "user_sessions#destroy", :as => "logout_user"
       post "login_user" => "user_sessions#create", :as => "login_user"
-      get "check_connection" => "user_sessions#check_connection", :as => "check_connection"
+      #get "check_connection" => "user_sessions#check_connection", :as => "check_connection"
 
       # devise_for :users, skip: :all
       # devise_scope :api_user do
@@ -34,62 +34,53 @@ Reech::Application.routes.draw do
       #   :unlocks => 'devise/unlocks'
       # }
 
-      resources :categories
+      #resources :categories
       post "get_category_list" => "categories#index", :as =>"get_category_list"
 
 
-      resources :questions
+      resources :questions, only: [:create]
       post "question_feed" => "questions#index"
       post "mark_question_stared" => "questions#mark_question_stared"
       post "linked_questions" => "questions#linked_questions"
       post "link_questions_to_expert" => "questions#link_questions_to_expert"
-      post "/send_gcm_notification" => "questions#send_gcm_notification", :as => "send_gcm_notification"
+      #post "/send_gcm_notification" => "questions#send_gcm_notification", :as => "send_gcm_notification"
       #post "/get_question_details" => "questions#get_question_details", :as => "get_question_details"
       post "post_question_with_image" => "questions#post_question_with_image",:as =>"post_question_with_image"
 
 
 
-      resources :solutions
+      resources :solutions, only: [:create]
       post "view_solution" => "solutions#view_solution", :as => "view_solution"
-      post "all_solutions" => "solutions#view_all_solutions", :as => "all_solutions"
+      #post "all_solutions" => "solutions#view_all_solutions", :as => "all_solutions"
       post "solution_hi5" => "solutions#solution_hi5", :as => "solution_hi5"
       post "preview_solution" => "solutions#preview_solution", :as => "preview_solution"
       post "previewed_solutions" => "solutions#previewed_solutions", :as => "previewed_solutions"
       post "purchase_solution" =>"solutions#purchase_solution", :as => "purchase_solution"
-      post "get_solution_details" =>"solutions#get_solution_details", :as => "get_solution_details"
+      #post "get_solution_details" =>"solutions#get_solution_details", :as => "get_solution_details"
       post "question_details_with_solutions" =>"solutions#question_details_with_solutions", :as => "question_details_with_solutions"
       post "post_solution_with_image" =>"solutions#create", :as => "post_solution_with_image"
 
 
-      resources :user_profile
-      get "/connections" => "user_profile#showconnections", :as=>"connections"
+      #resources :user_profile
+      #get "/connections" => "user_profile#showconnections", :as=>"connections"
       post "/changepassword" => "user_profile#changepass", :as=>"changepassword"
       post "/forgetpassword" => "user_profile#forget_password", :as=>"forgetpassword"
       post "/profile" => "user_profile#index", :as=>"profile"
       post "/update_profile" => "user_profile#update", :as => "update_profile"
       get "/profile_dash_board" => "user_profile#profile_dash_board", :as => "profile_dash_board"
-      get "/profile_hi5" => "user_profile#profile_hi5", :as=>"profile_hi5"
+      #get "/profile_hi5" => "user_profile#profile_hi5", :as=>"profile_hi5"
       post "/add_contact" => "user_profile#add_contact", :as => "add_contact"
       post "/leader_board" => "user_profile#leader_board", :as => "leader_board"
       post "user_profile_info" => "user_profile#user_profile_info", :as => "user_profile_info"
 
-      resources :user_settings
+      #resources :user_settings
       post "/view_settings" => "user_settings#view_settings", :as=>"view_settings"
       post "/update_settings" => "user_settings#update_settings", :as=>"update_settings"
 
-      resources :friendships do
-        collection do
-          post 'index'
-          get 'req',:as=>"addfriend"
-          get 'accept',:as=>"accept_fr"
-          get 'reject',:as=>"reject_fr"
+      #resources :friendships
+      post "/friendships" => "friendships#index", :as=>"friendships_index"
 
-        end
-
-
-      end
-
-     resources :groups
+     resources :groups, only: [:create]
      post "associate_user_to_group" => "groups#associate_user_to_group", :as=>"associate_user_to_group"
      get "reecher_personal_groups" => "groups#reecher_personal_groups" ,:as =>"reecher_personal_groups"
 
