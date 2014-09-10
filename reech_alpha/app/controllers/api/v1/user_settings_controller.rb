@@ -5,14 +5,12 @@ module Api
 			respond_to :json
 
 			def view_settings
-				@user = User.find_by_reecher_id(params[:user_id])
-				msg = {:status => 200, :settings => @user.user_settings }
+				msg = {:status => 200, :settings => current_user.user_settings }
 				render :json => msg
-			end	
+			end
 
 			def update_settings
-				@user = User.find_by_reecher_id(params[:user_id])
-				user_settings = @user.user_settings
+				user_settings = current_user.user_settings
 				user_settings.location_is_enabled = params[:location]
 				user_settings.pushnotif_is_enabled = params[:push_notification]
 				user_settings.emailnotif_is_enabled = params[:email]
@@ -22,13 +20,13 @@ module Api
 				user_settings.notify_audience_if_ask_for_help = params[:ask_for_help]
 				user_settings.notify_when_someone_grab_my_answer = params[:grab_my_sol]
 				user_settings.notify_when_my_stared_question_get_answer = params[:starred_quest_answer]
-				user_settings.save  
-				msg = {:status => 200, :settings => @user.user_settings }
+				user_settings.save
+				msg = {:status => 200, :settings => current_user.user_settings }
 				render :json => msg
 			end
-				
-			
-				
+
+
+
 		end
 	end
-end			
+end
