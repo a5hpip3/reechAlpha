@@ -2,7 +2,8 @@ class AddContactWorker
   include ApplicationHelper
   include Sidekiq::Worker
   sidekiq_options retry: false
-  def perform(email, phone, user)
+  def perform(email, phone, user_id)
+    user = User.find(user_id)
     UserMailer.send_invitation_email_for_new_contact(email, user).deliver if email
     if phone
       client = Twilio::REST::Client.new(TWILIO_CONFIG['sid'], TWILIO_CONFIG['token'])

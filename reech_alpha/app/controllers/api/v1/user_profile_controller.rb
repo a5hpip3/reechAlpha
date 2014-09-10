@@ -120,23 +120,6 @@ module Api
 
          end
 
-
-
-
-=begin
-					if !@user.nil?
-						@user.deliver_password_reset_instructions!
-						msg = {:status => 200, :message => "Password sent to your email"}
-						logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{ msg}"
-						render :json => msg
-					else
-						msg = {:status => 400, :message => "Given Email not found"}
-						logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{ msg}"
-						render :json => msg
-					end
-=end
-			#	end
-
 				def showconnections
 					all_connections = current_user.friends.select("first_name, last_name, email,friend_reecher_id")
 					render json: {:status=> 200, :message => all_connections.nil? ? "No connections" : all_connections}
@@ -158,7 +141,7 @@ module Api
           if params[:contact_details].present?
 						email = params[:contact_details][:email]
 						phone = params[:contact_details][:phone_number]
-					  AddContactWorker.perform_async(email, phone, current_user)
+					  AddContactWorker.perform_async(email, phone, current_user.id)
 						msg = {:status => 200, :message => "SMS/ Email sent to contact."}
 					else
 						msg = {:status => 400, :message => "Failed to send Email/SMS."}
