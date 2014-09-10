@@ -86,6 +86,8 @@ class User < ActiveRecord::Base
 	#Profile
 
 	has_one :user_profile,:primary_key=>:reecher_id,:foreign_key=>:reecher_id, :dependent => :destroy
+	accepts_nested_attributes_for :user_profile
+
 	delegate :reecher_interests, :reecher_hobbies, :reecher_fav_music, :reecher_fav_movies,
 
 					 :reecher_fav_books, :reecher_fav_sports, :reecher_fav_destinations,
@@ -95,6 +97,7 @@ class User < ActiveRecord::Base
 					 :to => :user_profile
 
 	has_one :user_settings, :primary_key=>:reecher_id,:foreign_key=>:reecher_id, :dependent => :destroy
+  accepts_nested_attributes_for :user_settings
 
 	has_many :preview_solutions
 
@@ -109,7 +112,7 @@ class User < ActiveRecord::Base
 
 	accepts_nested_attributes_for :user_profile
 
-	after_create :create_reecher_profile, :create_user_settings
+	before_create :create_reecher_profile
 
 
 	def self.create_from_omniauth_data(omniauth_data)
@@ -130,7 +133,7 @@ class User < ActiveRecord::Base
   def name
   	full_name
   end
-  
+
   def image_url
   	user_profile.image_url
   end
@@ -182,25 +185,10 @@ class User < ActiveRecord::Base
 
 	# after_create callback to create new profile associated with the Reecher
 	def create_reecher_profile
-		reecher_profile = UserProfile.new
-		reecher_profile.reecher_id = self.reecher_id
-		reecher_profile.save!
+    self.build_user_profile
+		self.build_user_settings
 	end
 
-	def create_user_settings
-		user_settings = UserSettings.new
-		user_settings.reecher_id = self.reecher_id
-		user_settings.location_is_enabled = true
-		user_settings.pushnotif_is_enabled = true
-		user_settings.emailnotif_is_enabled = true
-		user_settings.notify_question_when_answered = true
-		user_settings.notify_linked_to_question = true
-		user_settings.notify_solution_got_highfive = true
-		user_settings.notify_audience_if_ask_for_help = true
-		user_settings.notify_when_someone_grab_my_answer = true
-		user_settings.notify_when_my_stared_question_get_answer = true
-		user_settings.save!
-	end
 
 	def deliver_password_reset_instructions!
 		reset_persistence_token!
