@@ -20,7 +20,7 @@ class Solution < ActiveRecord::Base
 
 	validates_attachment :picture, :content_type => { :content_type => "image/jpeg" } , unless: Proc.new { |record| record[:picture].nil? }
 	after_create :notify_users
-  scope :public, -> {where(is_public: true)}
+  
 	def buy(soln)
 		solution.ask_charisma = soln
 	end

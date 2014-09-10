@@ -248,6 +248,7 @@ module Api
         if (current_user_is_owner|| questionis_public || (current_user_is_linked_to_question && current_user_friend_with_question_owner))
            question[:question_referee] = question_owner.full_name   
            question[:no_profile_pic] = false      
+           question.user.user_profile.picture_file_name != nil ? question[:owner_image] = question.user.user_profile.thumb_picture_url : question[:owner_image] = nil
         elsif (current_user_is_linked_to_question)
            question[:question_referee] = "Friend of "+ question.linked_by.full_name   
            question[:question_referee_id] = question.linked_by.reecher_id
