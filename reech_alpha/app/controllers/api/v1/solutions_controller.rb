@@ -243,17 +243,20 @@ module Api
         current_user_is_owner = (current_user.reecher_id == question.posted_by_uid)
         post_question_to_friends = question.post_question_to_friends.pluck(:user_id)
         current_user_is_linked_to_question = question.linked_questions.pluck(:user_id).include? current_user.reecher_id
+        link_friends_to_question_owner_current_user = (current_user.friends & question.user.friends).first
         current_user_friend_with_question_owner = Friendship::are_friends(current_user.reecher_id, question.user.reecher_id)    
         
-        if (current_user_is_owner|| (current_user_is_linked_to_question && current_user_friend_with_question_owner)) # || question.is_public
+        if (current_user_is_owner ||  current_user_friend_with_question_owner) # || question.is_public
            question[:question_referee] = question_owner.full_name   
            question[:no_profile_pic] = false      
            question.user.user_profile.picture_file_name != nil ? question[:owner_image] = question.user.user_profile.thumb_picture_url : question[:owner_image] = nil
-        elsif (current_user_is_linked_to_question)
-           question[:question_referee] = "Friend of "+ question.linked_by.full_name   
-           question[:question_referee_id] = question.linked_by.reecher_id
+        elsif (current_user_is_linked_to_question || !link_friends_to_question_owner_current_user.nil?)
+           link = link_friends_to_question_owner_current_user unless link_friends_to_question_owner_current_user.nil?
+           link = question.linked_by if current_user_is_linked_to_question
+           question[:question_referee] = "Friend of "+ link.full_name   
+           question[:question_referee_id] = link.reecher_id
            question[:no_profile_pic] = false 
-           question.linked_by.user_profile.picture_file_name != nil ? question[:owner_image] = question.linked_by.user_profile.thumb_picture_url : question[:owner_image] = nil
+           link.user_profile.picture_file_name != nil ? question[:owner_image] = link.user_profile.thumb_picture_url : question[:owner_image] = nil
         else          
            question[:question_referee] = "Friend"  
            question[:no_profile_pic] = true 
