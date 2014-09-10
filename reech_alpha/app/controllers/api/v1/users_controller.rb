@@ -33,7 +33,7 @@ module Api
                   										@user.user_profile.picture = data
                   										@user.user_profile.save
                   									end
-                  	  							@user.add_points(500)
+                  	  							
                   	  							@api_key = ApiKey.create(:user_id => @user.reecher_id).access_token
                   	  							
                   									create_device_for_user(params[:device_token], params[:platform], @user.reecher_id)
@@ -92,7 +92,7 @@ module Api
                                 	make_friendship(@fb_friends,@user,params[:device_token]) if @fb_friends.size > 0
                   								create_session_for_fb_user(@user)
                   								Authorization.create(:user_id => @user.id, :uid => params[:user_details][:uid], :provider => params[:provider])
-                  								@user.add_points(500)
+                  								
                   								@api_key = ApiKey.create(:user_id => @user.reecher_id).access_token
                   								msg = {:status => 201, :api_key=>@api_key, :user_id=>@user.reecher_id,:email=>@user.email}
                   								#logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"

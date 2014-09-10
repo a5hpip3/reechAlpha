@@ -113,6 +113,7 @@ class User < ActiveRecord::Base
 	accepts_nested_attributes_for :user_profile
 
 	before_create :create_reecher_profile
+	after_create :assign_points
 
 
 	def self.create_from_omniauth_data(omniauth_data)
@@ -187,6 +188,10 @@ class User < ActiveRecord::Base
 	def create_reecher_profile
     self.build_user_profile
 		self.build_user_settings
+	end
+
+	def assign_points
+		self.add_points(500)
 	end
 
 
