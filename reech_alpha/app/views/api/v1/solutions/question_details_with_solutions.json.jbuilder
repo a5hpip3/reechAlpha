@@ -44,7 +44,7 @@ json.solutions do
     solution_is_purchased = current_user.purchased_solutions.pluck(:solution_id).include? solution.id.to_s
     json.solver_image  solution.wrote_by.user_profile.picture_file_name != nil ? solution.wrote_by.user_profile.thumb_picture_url : nil
     json.image_url  solution.picture_file_name != nil ? solution.picture_url : nil
-    json.purchased  solution_is_purchased            
+    json.purchased  solution_is_purchased             
     if !solution.picture_file_name.blank?
       sol_pic_geo = ((solution.sol_pic_geometry).to_s).split('x')   
       json.image_width  sol_pic_geo[0] 

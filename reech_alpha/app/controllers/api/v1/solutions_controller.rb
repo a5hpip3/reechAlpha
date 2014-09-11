@@ -227,7 +227,7 @@ module Api
 
 
       def question_details_with_solutions        
-      	render 'question_details_with_solutions.json.jbuilder'
+      	render 'question_details_with_solutions.json.jbuilder' 
       end     
 
 
