@@ -95,19 +95,7 @@ module Api
           @user.save(:validate=> false)  unless @user.blank?
 					if !@user.blank?
 
-              begin
-              UserMailer.send_new_password_as_forgot_password(@user,pass_token).deliver    unless @user.email.blank?
-               client = Twilio::REST::Client.new(TWILIO_CONFIG['sid'], TWILIO_CONFIG['token'])
-                sms = client.account.sms.messages.create(
-                          from: TWILIO_CONFIG['from'],
-                          to: @user.phone_number,
-                          body: "Username= #{@user.original_phone_number} and Temporary password= #{pass_token}"
-                          #body: "Dear #{@user.full_name},We are providing you a temporary password for login into application and later on you can reset it. Your Username= #{@user.phone_number} and Temporay password=#{pass_token}"
-                      )
-
-              rescue Exception => e
-              logger.error e.backtrace.join("\n")
-              end
+              UserProfileWorker.perform_async(@user.id, pass_token)
               logger.debug ">>>>>>>>>Sending sms to #{@user.phone_number} with text "
               msg = {:status => 200, :message => "Password sent to your phone number"}
               logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{ msg}"
