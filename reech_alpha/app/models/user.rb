@@ -208,18 +208,6 @@ class User < ActiveRecord::Base
   	linked_questions.exists?(question_id: question_id, linked_by_uid: linked_user, linked_type: "LINKED")
   end
 
-  def notify_when_question_linked?
-  	(user_settings.emailnotif_is_enabled && user_settings.notify_linked_to_question)
-  end
-
-  def notify_me_for_help?
-  	(user_settings.pushnotif_is_enabled && user_settings.notify_audience_if_ask_for_help)
-  end
-
-  def notify_me_by_mail_for_help?
-  	(user_settings.emailnotif_is_enabled && user_settings.notify_audience_if_ask_for_help)
-  end
-
   def has_device_notifications_enabled?(linked_type)
   	case linked_type
   	when "LINKED"

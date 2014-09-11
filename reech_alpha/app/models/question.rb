@@ -47,57 +47,6 @@ class Question < ActiveRecord::Base
     self.question_id=gen_question_id
   end
 
-  # Instead of constructing a JSON array it is better to write a json file usin jbuilder which renders from index action
- def self.filterforuser user_id , question_list_obj
-   questions = question_list_obj
-   @Questions =[]
-   if !questions.blank?
-      questions.each do |q|
-        question_asker = q.posted_by_uid
-        #puts "question_askerquestion_asker=#{question_asker}"
-        question_user = User.find_by_reecher_id(question_asker)
-        #question_asker_name = q.posted_by
-        question_asker_name = question_user.full_name
-        question_is_public = q.is_public
-        @pqtfs = PostQuestionToFriend.where("question_id = ?", q.question_id)
-        solution_posted_by_login_user = Solution.where( "solver_id = ? AND question_id =? ", user_id , q.question_id)
-        #puts "!solution_posted_by_login_user=#{question_asker}"
-        if !solution_posted_by_login_user.empty?
-          solution_posted_by_login_user_id = solution_posted_by_login_user.collect{|sol| sol.id}
-        end
-        purchased_sl_by_question_owner = PurchasedSolution.where(:user_id => question_asker)
-        if !purchased_sl_by_question_owner.empty?
-          purchased_sl_by_question_owner = purchased_sl_by_question_owner.collect {|s| s.solution_id}
-        end
-        reecher_user_associated_to_question=@pqtfs.collect{|pq| pq.friend_reecher_id} if !@pqtfs.blank?
-
-        if ((!purchased_sl_by_question_owner.blank?) && (!solution_posted_by_login_user_id.blank?))
-          match_ids= solution_posted_by_login_user_id & purchased_sl_by_question_owner
-          if match_ids.size > 0
-            #q[:question_referee] = q.posted_by
-            q[:question_referee] = question_asker_name
-            q[:no_profile_pic] = false
-          end
-        elsif (( user_id ==  question_asker) || question_is_public)
-          #q[:question_referee] = q.posted_by
-          q[:question_referee] = question_asker_name
-          q[:no_profile_pic] = false
-        elsif(!@pqtfs.blank? && (reecher_user_associated_to_question.include? user_id))
-          #q[:question_referee] = q.posted_by
-          q[:question_referee] = question_asker_name
-          q[:no_profile_pic] = false
-        else
-          q[:question_referee] = "Friend"
-          q[:no_profile_pic] = true
-        end
-        @Questions << q
-      end
-    else
-      @Questions = []
-    end
- end
-
-
   def self.get_stared_questions(user_id)
     @stared_questions = []
     stared_question_ids = []

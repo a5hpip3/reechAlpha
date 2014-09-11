@@ -28,7 +28,7 @@ class QuestionsWorker
           puts "enters loop"
           if !audien_user.linked_with_question?(question_id, user)
             audien_user.linked_questions.create(question_id: question_id, linked_by_uid: user.reecher_id, email_id: audien_user.email, phone_no: audien_user.phone_number,:linked_type=>'LINKED')
-            if audien_user.notify_when_question_linked?
+            if audien_user.has_email_notifications_enabled?("LINKED")
               @question = Question.find_by_question_id(question_id)
               puts "email"
               UserMailer.email_linked_to_question(audien_user.email, user, @question).deliver  unless audien_user.email.blank?
@@ -49,14 +49,14 @@ class QuestionsWorker
         User.where(reecher_id: reecher_ids).each do |audien_user|
           pqtf = PostQuestionToFriend.create(user_id: user.reecher_id, friend_reecher_id: audien_user.reecher_id, question_id: question.question_id)
           @post_quest_to_frnd << pqtf.id
-          if audien_user.notify_me_for_help?
+          if audien_user.has_device_notifications_enabled?("ASK")
             notify_string = push_contant_str + "," + "<"+user.full_name + ">" + "," + question.question_id.to_s + "," + Time.now().to_s
             Device.where(reecher_id: audien_user.reecher_id).each do |d|
               send_device_notification(d.device_token.to_s, notify_string, d.platform.to_s, user.full_name+push_title_msg)
             end
           end
 
-          if audien_user.notify_me_by_mail_for_help?
+          if audien_user.has_email_notifications_enabled?("ASK")
             UserMailer.send_question_details_to_audien(audien_user.email, audien_user.first_name,question, user).deliver if audien_user.email !=nil
           end
         end
