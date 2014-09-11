@@ -41,7 +41,7 @@ json.solutions do
     current_user_is_solver = (current_user.reecher_id == solution.solver_id)
     solver_friend_with_current_user = Friendship::are_friends(current_user.reecher_id, solution.solver_id)
     solver_friend_with_question_owner = Friendship::are_friends(question.user.reecher_id, solution.solver_id)
-    solution_is_purchased = PurchasedSolution.where(:user_id => current_user.id, :solution_id => solution.id).exists?  
+    solution_is_purchased = current_user.purchased_solutions.pluck(:solution_id).include? solution.id.to_s
     json.solver_image  solution.wrote_by.user_profile.picture_file_name != nil ? solution.wrote_by.user_profile.thumb_picture_url : nil
     json.image_url  solution.picture_file_name != nil ? solution.picture_url : nil
     json.purchased  solution_is_purchased            
