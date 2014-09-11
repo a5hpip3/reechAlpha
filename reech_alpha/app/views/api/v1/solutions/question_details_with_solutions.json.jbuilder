@@ -55,7 +55,7 @@ json.solutions do
     if solution_is_purchased || current_user_is_solver || solver_friend_with_current_user
       json.solution_provider_name solution.wrote_by.full_name
     else
-      if (!(link = question.linked_questions.where(user_id: current_user.reecher_id)).blank? || !(link = (current_user.friends & solution.wrote_by.friends).first).blank? || !(link = (current_user.friends & question.user.friends).first).blank?)
+      if current_user_friend_with_question_owner || (!(link = question.linked_questions.where(user_id: current_user.reecher_id)).blank? || !(link = (current_user.friends & solution.wrote_by.friends).first).blank? || !(link = (current_user.friends & question.user.friends).first).blank?)
         link = link.linked_by unless question.linked_questions.where(user_id: current_user.reecher_id).blank?
         link = question.user if current_user_friend_with_question_owner
         json.solution_provider_name "Friend of #{link.full_name}"       
