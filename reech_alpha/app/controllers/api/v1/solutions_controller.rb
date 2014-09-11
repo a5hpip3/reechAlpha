@@ -260,6 +260,7 @@ module Api
         else          
            question[:question_referee] = "Friend"  
            question[:no_profile_pic] = true 
+           question[:owner_image] = nil
         end 
       	result = []
         solutions.each do |solution|
@@ -293,6 +294,7 @@ module Api
               solution_attrs[:solution_provider_name] = "Friend"
               solution_attrs[:no_profile_pic] = true
               solution_attrs[:profile_pic_clickable] = false
+              solution_attrs[:solver_image] = nil
             end          
           end        
           result << solution_attrs
