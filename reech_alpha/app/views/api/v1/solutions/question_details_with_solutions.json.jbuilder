@@ -4,7 +4,6 @@ question_owner = question.user
 current_user_is_owner = (current_user.reecher_id == question.posted_by_uid)
 current_user_is_audien = question.post_question_to_friends.pluck(:user_id).include? current_user.reecher_id
 current_user_is_linked_to_question = question.linked_questions.pluck(:user_id).include? current_user.reecher_id
-link_friends_to_question_owner_current_user = (current_user.friends & question.user.friends).first
 current_user_friend_with_question_owner = Friendship::are_friends(current_user.reecher_id, question.user.reecher_id)    
 
 ##############question_details
