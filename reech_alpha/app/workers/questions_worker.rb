@@ -45,7 +45,7 @@ class QuestionsWorker
   def send_posted_question_notification_to_reech_users audien_details ,user,question,push_title_msg,push_contant_str,linked_quest_type
       reecher_ids = audien_details["reecher_ids"]
       @post_quest_to_frnd =[]
-      if(!audien_details.blank? && audien_details.has_key?("reecher_ids") && !audien_details[:reecher_ids].empty?)
+      if(!audien_details.blank? && audien_details.has_key?("reecher_ids") && !audien_details["reecher_ids"].empty?)
         User.where(reecher_id: reecher_ids).each do |audien_user|
           pqtf = PostQuestionToFriend.create(user_id: user.reecher_id, friend_reecher_id: audien_user.reecher_id, question_id: question.question_id)
           @post_quest_to_frnd << pqtf.id
