@@ -7,7 +7,7 @@ Reech::Application.routes.draw do
       resources :categories
       resources :users do
         collection do
-          get 'friends'
+          get 'friends', 'leader_board'
         end
       end
       resources :questions
