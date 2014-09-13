@@ -5,7 +5,11 @@ Reech::Application.routes.draw do
     namespace :v2 do
       resources :groups
       resources :categories
-      resources :users
+      resources :users do
+        collection do
+          get 'friends'
+        end
+      end
       resources :questions
       resources :solutions
     end
