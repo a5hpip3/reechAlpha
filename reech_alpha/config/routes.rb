@@ -2,6 +2,14 @@ Reech::Application.routes.draw do
 
   namespace :api, defaults: {format: 'json'} do
 
+    namespace :v2 do
+      resources :groups
+      resources :categories
+      resources :users
+      resources :questions
+      resources :solutions
+    end
+
     namespace :v1 do
 
       #resources :users
