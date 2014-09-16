@@ -25,7 +25,7 @@ class Question < ActiveRecord::Base
 
   has_many :post_question_to_friends, primary_key: :question_id
   #default_scope { where(:published_at => Time.now - 1.week) }
-
+  belongs_to :category
   # Need to test
   # scope :feed, ->(arg){where("posted_by_uid  IN (?) AND created_at >= ?" , arg.friends.pluck(:friend_reecher_id).push(arg.reecher_id) ,arg.created_at).order("created_at DESC")}
 
