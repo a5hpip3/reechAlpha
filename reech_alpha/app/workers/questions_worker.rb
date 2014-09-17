@@ -23,14 +23,11 @@ class QuestionsWorker
   def link_questions_to_expert_for_users audien_details ,user,question_id
       reecher_ids = audien_details["reecher_ids"]
       if !reecher_ids.blank?
-        puts "enters"
         User.where(reecher_id: reecher_ids).each do |audien_user|
-          puts "enters loop"
           if !audien_user.linked_with_question?(question_id, user)
             audien_user.linked_questions.create(question_id: question_id, linked_by_uid: user.reecher_id, email_id: audien_user.email, phone_no: audien_user.phone_number,:linked_type=>'LINKED')
             if audien_user.has_email_notifications_enabled?("LINKED")
               @question = Question.find_by_question_id(question_id)
-              puts "email"
               UserMailer.email_linked_to_question(audien_user.email, user, @question).deliver  unless audien_user.email.blank?
               notify_string ="LINKED,"+ "<" + user.full_name + ">" + ","+ question_id.to_s + "," +Time.now().to_s
               audien_user.devices.each do |d|

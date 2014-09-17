@@ -5,7 +5,7 @@ json.questions @questions do |q|
 	json.(question, :id, :post, :posted_by, :posted_by_uid, :created_at, :updated_at, :ups, :downs, :question_id, :sash_id, :level, :Charisma, :is_public, :avatar_file_name, :avatar_content_type, :avatar_file_size, :avatar_updated_at, :audien_user_ids, :category_id)
 
 	if action_name == "index"
-		if((!q[2].blank? && (q[2].split(',').include? current_user)) || current_user.reecher_id == q[3])
+		if((!q[2].blank? && (q[2].split(',').include?(current_user.reecher_id))) || current_user.reecher_id == question.posted_by_uid)
 			json.question_referee question.user.full_name
 			json.no_profile_pic false
 		else
