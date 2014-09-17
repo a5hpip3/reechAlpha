@@ -9,7 +9,7 @@ class Category < ActiveRecord::Base
 	end
 
 	def as_json(options = {})
-		super(:only => [:title], methods: [:question_count, :solution_count])
+		super(:only => [:id, :title], methods: [:question_count, :solution_count])
 	end
 
 	def question_count

@@ -36,7 +36,8 @@ module Api
     end 
 
     def linked_questions
-      @questions = Question.where(question_id: LinkedQuestion.where("user_id = ? and linked_type =? ",current_user.reecher_id, "LINKED").order("id DESC").pluck(:question_id))
+      sql_str = "select q.question_id as q_id, (select count(*)  from purchased_solutions  WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id IN (select id from solutions where question_id = q_id)) AS ops,  NULL as pqtfs from questions q WHERE q.question_id IN (select l.question_id from linked_questions l where l.user_id = \'#{current_user.reecher_id}\' AND l.linked_type='LINKED' ORDER BY l.id DESC)"
+      @questions = ActiveRecord::Base.connection.execute(sql_str)
       render "index.json.jbuilder"
     end
 
@@ -47,9 +48,6 @@ module Api
       # Outer if condition    
           if !params[:audien_details].nil?
             QuestionsWorker.perform_async(action_name, params[:audien_details], current_user.id, @question.id, PUSH_TITLE_LINKED, "LINKED", "LINKED")            
-             # Thread.new{link_questions_to_expert_for_users params[:audien_details] , current_user,@question.question_id}
-             # Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
-             # Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
           end
       # end of outer  if loop
       end
@@ -107,9 +105,6 @@ module Api
     def send_notifications
       if !params[:audien_details].nil?
         QuestionsWorker.perform_async(action_name, params["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
-        #Thread.new{send_posted_question_notification_to_reech_users params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
-        #Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
-        #Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
       end
       post_quest_to_frnd = []
       if !post_quest_to_frnd.blank? 

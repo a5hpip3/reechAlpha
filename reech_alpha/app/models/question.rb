@@ -43,17 +43,17 @@ class Question < ActiveRecord::Base
 
   class << self
     def feed(arg)
-      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid) AND solution_id IN (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q WHERE (posted_by_uid IN (SELECT friend_reecher_id FROM users INNER JOIN friendships ON users.reecher_id = friendships.friend_reecher_id WHERE friendships.reecher_id = \'#{arg.reecher_id}\' AND (status = 'accepted')) OR posted_by_uid = \'#{arg.reecher_id}\') AND q.created_at >= \'#{arg.created_at}\'"
+      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid) AND solution_id IN (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q WHERE (posted_by_uid IN (SELECT friend_reecher_id FROM users INNER JOIN friendships ON users.reecher_id = friendships.friend_reecher_id WHERE friendships.reecher_id = \'#{arg.reecher_id}\' AND (status = 'accepted')) OR posted_by_uid = \'#{arg.reecher_id}\') AND q.created_at >= \'#{arg.created_at}\' ORDER BY created_at DESC"
       ActiveRecord::Base.connection.execute(sql_str)
     end
 
     def stared(arg)
-      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.id IN(select v.question_id from votings v INNER JOIN questions ON v.question_id = questions.id WHERE questions.posted_by_uid = \'#{arg.reecher_id}\')"
+      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.id IN(select v.question_id from votings v INNER JOIN questions ON v.question_id = questions.id WHERE questions.posted_by_uid = \'#{arg.reecher_id}\') ORDER BY q.created_at DESC"
       ActiveRecord::Base.connection.execute(sql_str)
     end
 
     def self(arg)
-      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.posted_by_uid = \'#{arg.reecher_id}\' OR q.id IN(select s.question_id from purchased_solutions p INNER JOIN solutions s ON p.solution_id = s.id WHERE p.user_id = #{arg.id})"
+      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.posted_by_uid = \'#{arg.reecher_id}\' OR q.id IN(select s.question_id from purchased_solutions p INNER JOIN solutions s ON p.solution_id = s.id WHERE p.user_id = #{arg.id}) ORDER BY q.created_at DESC"
       ActiveRecord::Base.connection.execute(sql_str)
     end
 
