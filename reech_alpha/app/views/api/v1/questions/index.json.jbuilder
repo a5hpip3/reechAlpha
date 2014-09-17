@@ -9,15 +9,15 @@ json.questions @questions do |q|
 			json.question_referee question.user.full_name
 			json.no_profile_pic false
 		else
-			json.question_referee = "Friend"
-	        json.no_profile_pic = true
+			json.question_referee "Friend"
+	        json.no_profile_pic true
 		end
 	end
 
 	if !q[1] == 0
-		json.has_solution = true
+		json.has_solution true
 	else
-		json.has_solution = false
+		json.has_solution false
 	end
 
 	q[3]==0 ? (json.stared false) : (json.stared true)
