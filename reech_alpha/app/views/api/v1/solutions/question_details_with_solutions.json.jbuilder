@@ -26,8 +26,9 @@ json.qust_details do
     json.profile_pic_clickable false
   end 
 end
-
-solutions = question.solutions  
+#sort purchased solutions first
+solutions = question.solutions.group_by{|solution| current_user.purchased_solutions.pluck(:solution_id).include? solution.id.to_s}
+solutions = solutions[true] + solutions[false] 
 json.solutions do
   json.array! solutions do |solution|    
     json.extract! solution, *solution.attributes.keys    
