@@ -28,7 +28,7 @@ json.qust_details do
 end
 #sort purchased solutions first
 solutions = question.solutions.group_by{|solution| current_user.purchased_solutions.pluck(:solution_id).include? solution.id.to_s}
-solutions = solutions[true] + solutions[false] 
+solutions = (solutions[true] || []) + (solutions[false] || [])
 json.solutions do
   json.array! solutions do |solution|    
     json.extract! solution, *solution.attributes.keys    
