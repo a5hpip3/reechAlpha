@@ -24,28 +24,15 @@ module Api
     end
 
     def mark_question_stared
-      @question = Question.find_by_question_id(params[:question_id])      
-      if params[:stared] == "true"
+      @@question = Question.find_by_question_id(params[:question_id])
+      if !@question.blank?
         @voting = Voting.where(user_id: current_user.id, question_id: @question.id).first
-        if @voting.blank?
-        @voting = Voting.new do |v|
-                  v.user_id = current_user.id
-                  v.question_id = @question.id
-                end
-        @voting.save ? msg = {:status => 200, :message => "Successfully Stared",:is_login_user_starred_qst=>true} : msg = {:status => 401, :message => "Failed!",:is_login_user_starred_qst=>false}
-       else
-        msg = {:status => 200, :message => "Already Stared",:is_login_user_starred_qst=>true}
-       end  
-      elsif params[:stared] == "false"
-        @voting = Voting.where(user_id: current_user.id, question_id: @question.id).first
-        if @voting.present?
-          @voting.destroy
-          @voting.destroyed? ? msg = {:status => 200, :message => "Successfully UnStared",:is_login_user_starred_qst=>false} : msg = {:status => 401, :message => "Failed!",:is_login_user_starred_qst=>false}
-        else
-          msg = {:status => 200, :message => "Already UnStared",:is_login_user_starred_qst=>false}
-        end 
-      end
-      logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{ msg}" 
+        @question.votings.create(user_id: current_user.id) if(params[:stared] == "true" && @voting.blank?)
+        @voting.destroy if(params[:stared] == "false" && @voting.present?)
+        msg = {:status => 200, :message => (params[:stared] == "true" ? "Successfully Stared" : "Successfully UnStared"),:is_login_user_starred_qst=> (params[:stared] == "true" ? true : false)}
+      else
+        msg = {:status => 404, :message => "Failed!",:is_login_user_starred_qst=>false}
+      end      
       render :json => msg 
     end 
 
@@ -107,10 +94,11 @@ module Api
       puts "link_questions_to_expert==#{params.inspect}"
       if !@question.blank?
       # Outer if condition    
-          if !params[:audien_details].nil?            
-             Thread.new{link_questions_to_expert_for_users params[:audien_details] , current_user,@question.question_id}
-             Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
-             Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
+          if !params[:audien_details].nil?
+            QuestionsWorker.perform_async(action_name, params[:audien_details], current_user.id, @question.id, PUSH_TITLE_LINKED, "LINKED", "LINKED")            
+             # Thread.new{link_questions_to_expert_for_users params[:audien_details] , current_user,@question.question_id}
+             # Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
+             # Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, @question,PUSH_TITLE_LINKED,"LINKED","LINKED"}
           end
       # end of outer  if loop
       end
@@ -120,16 +108,6 @@ module Api
   
     def send_gcm_notification
         destination = ["APA91bFbYwmetpiv96X1c52tV_sOpT9ZkAZlDyqk1AWKXvwe7bjVUJJ8QwsGB4kkHFt-JiIfIrGh7ScM6ZrTdBe5GCAXkwzncQ4ynAk9zcnVkP5OvYhwVriVcsdgrzfFqZsd4vu6CLoCGMerOP0BH1evR8YqtjcgkA"]#params[:device_token]
-        #data1 = {:msg => "Hello Vijay"}
-        # must be an hash with all values you want inside you notification
-        # options1 = {:collapse_key => "placar_score_global", :time_to_live => 3600, :delay_while_idle => true}
-        # options for the notification
-        #n1 = GCM.Notification(destination, data1, options1)
-        #data = {:alert => "Hello Android!!!" }
-        # GCM.send_notification( destination,{"key" =>"HELLO WORLD"} )
-        #GCM.send_notification( destination , data1, {:collapse_key => "score update", :time_to_live => 3600, :delay_while_idle => true})
-        #msg = { :status => 200, :message => "success"}
-       #render :json =>msg
         message_options = {
         #optional parameters below.  Read the docs here: http://developer.android.com/guide/google/gcm/gcm.html#send-msg
           :collapse_key => "foobar",
@@ -273,9 +251,10 @@ module Api
 
     def send_notifications
       if !params[:audien_details].nil?
-        Thread.new{send_posted_question_notification_to_reech_users params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
-        Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
-        Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
+        QuestionsWorker.perform_async(action_name, params["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
+        #Thread.new{send_posted_question_notification_to_reech_users params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
+        #Thread.new{send_posted_question_notification_to_chosen_emails params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
+        #Thread.new{send_posted_question_notification_to_chosen_phones params[:audien_details], current_user, entry,PUSH_TITLE_ASKHELP,"ASKHELP","ASK"}
       end
       post_quest_to_frnd = []
       if !post_quest_to_frnd.blank? 

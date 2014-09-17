@@ -1,5 +1,9 @@
 json.status 200
 json.questions @questions do |q|
+	question = Question.find_by_question_id(q[0])
+
+	json.(question, :id, :post, :posted_by, :posted_by_uid, :created_at, :updated_at, :ups, :downs, :question_id, :sash_id, :level, :Charisma, :is_public, :avatar_file_name, :avatar_content_type, :avatar_file_size, :avatar_updated_at, :audien_user_ids, :category_id)
+
 	pqtfs = PostQuestionToFriend.where("question_id = ?", q.question_id).pluck(:friend_reecher_id)
 	
 	owner_purchased_solutions = PurchasedSolution.where(user_id: q.user, :solution_id => Solution.where(solver_id: current_user, question_id: q)).pluck(:solution_id)

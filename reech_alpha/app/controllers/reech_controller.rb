@@ -7,11 +7,6 @@ class ReechController < ApplicationController
     if current_user
       @questions = Question.get_questions(:feed,current_user)
     end
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.json { render :json => @questions}
-    end
   end
 
   def reechtest

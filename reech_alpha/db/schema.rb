@@ -295,14 +295,15 @@ ActiveRecord::Schema.define(:version => 20140902134045) do
   create_table "solutions", :force => true do |t|
     t.string   "solver_id"
     t.string   "solver"
-    t.text     "body",                                :null => false
+    t.text     "body",                                   :null => false
     t.integer  "ask_charisma",         :default => 5
+    t.boolean  "is_public",            :default => true
     t.integer  "ups",                  :default => 0
     t.integer  "downs",                :default => 0
     t.string   "question_id"
     t.string   "linked_user"
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.string   "picture_file_name"
     t.string   "picture_content_type"
     t.integer  "picture_file_size"

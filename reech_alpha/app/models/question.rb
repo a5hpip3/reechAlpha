@@ -16,101 +16,141 @@ class Question < ActiveRecord::Base
   belongs_to :user, :foreign_key => 'posted_by_uid', :primary_key => 'reecher_id'
   has_many :votings, :dependent => :destroy
   has_many :solutions, :primary_key=>'question_id',:foreign_key => 'question_id',:dependent => :destroy
-
+  has_many :linked_questions, :foreign_key => 'question_id', :primary_key => 'question_id'
   has_many :posted_solutions,
-	:class_name => 'Solution',
-	:primary_key=>'question_id',
-	:foreign_key => 'question_id',
-	:order => "solutions.created_at DESC"
+  :class_name => 'Solution',
+  :primary_key=>'question_id',
+  :foreign_key => 'question_id',
+  :order => "solutions.created_at DESC"
 
-  has_many :post_question_to_friends
+  has_many :post_question_to_friends, primary_key: :question_id
   #default_scope { where(:published_at => Time.now - 1.week) }
-
+  belongs_to :category
   # Need to test
-  scope :feed, ->(arg){where("posted_by_uid  IN (?) AND created_at >= ?" , arg.friends.pluck(:friend_reecher_id).push(arg.reecher_id) ,arg.created_at).order("created_at DESC")}
+  # scope :feed, ->(arg){where("posted_by_uid  IN (?) AND created_at >= ?" , arg.friends.pluck(:friend_reecher_id).push(arg.reecher_id) ,arg.created_at).order("created_at DESC")}
 
-  scope :stared, ->(arg){where("id in (?)", arg.votings.pluck(:question_id)).order("created_at DESC")}
+  # scope :stared, ->(arg){where("id in (?)", arg.votings.pluck(:question_id)).order("created_at DESC")}
 
-  scope :self, ->(arg) do
-    my_questions = arg.questions.order("created_at DESC").pluck("id")
-    my_all_questions = (PurchasedSolution.questions(arg) + my_questions).sort
-    where("id in (?)", my_all_questions).order("created_at DESC")
-  end
+  # scope :self, ->(arg) do
+  #   my_questions = arg.questions.order("created_at DESC").pluck("id")
+  #   my_all_questions = (PurchasedSolution.questions(arg) + my_questions).sort
+  #   where("id in (?)", my_all_questions).order("created_at DESC")
+  # end
 
-  scope :get_questions, ->(type, current_user) do
-    questions_list = send(type, current_user)
-    #filterforuser(current_user.reecher_id, questions_list)
-  end
+  # scope :get_questions, ->(type, current_user) do
+  #   questions_list = send(type, current_user)
+  #   #filterforuser(current_user.reecher_id, questions_list)
+  # end
 
   ##########################
-  def create_question_id
-    self.question_id=gen_question_id
+ #  def create_question_id
+ #    self.question_id=gen_question_id
+ #  end
+
+ #  # Instead of constructing a JSON array it is better to write a json file usin jbuilder which renders from index action
+ # def self.filterforuser user_id , question_list_obj
+ #   questions = question_list_obj
+ #   @Questions =[]
+ #   if !questions.blank?
+ #      questions.each do |q|
+ #        question_asker = q.posted_by_uid
+ #        #puts "question_askerquestion_asker=#{question_asker}"
+ #        question_user = User.find_by_reecher_id(question_asker)
+ #        #question_asker_name = q.posted_by
+ #        question_asker_name = question_user.full_name
+ #        question_is_public = q.is_public
+ #        @pqtfs = PostQuestionToFriend.where("question_id = ?", q.question_id)
+ #        solution_posted_by_login_user = Solution.where( "solver_id = ? AND question_id =? ", user_id , q.question_id)
+ #        #puts "!solution_posted_by_login_user=#{question_asker}"
+ #        if !solution_posted_by_login_user.empty?
+ #          solution_posted_by_login_user_id = solution_posted_by_login_user.collect{|sol| sol.id}
+ #        end
+ #        purchased_sl_by_question_owner = PurchasedSolution.where(:user_id => question_asker)
+ #        if !purchased_sl_by_question_owner.empty?
+ #          purchased_sl_by_question_owner = purchased_sl_by_question_owner.collect {|s| s.solution_id}
+ #        end
+ #        reecher_user_associated_to_question=@pqtfs.collect{|pq| pq.friend_reecher_id} if !@pqtfs.blank?
+
+ #        if ((!purchased_sl_by_question_owner.blank?) && (!solution_posted_by_login_user_id.blank?))
+ #          match_ids= solution_posted_by_login_user_id & purchased_sl_by_question_owner
+ #          if match_ids.size > 0
+ #            #q[:question_referee] = q.posted_by
+ #            q[:question_referee] = question_asker_name
+ #            q[:no_profile_pic] = false
+ #          end
+ #        elsif (( user_id ==  question_asker) || question_is_public)
+ #          #q[:question_referee] = q.posted_by
+ #          q[:question_referee] = question_asker_name
+ #          q[:no_profile_pic] = false
+ #        elsif(!@pqtfs.blank? && (reecher_user_associated_to_question.include? user_id))
+ #          #q[:question_referee] = q.posted_by
+ #          q[:question_referee] = question_asker_name
+ #          q[:no_profile_pic] = false
+ #        else
+ #          q[:question_referee] = "Friend"
+ #          q[:no_profile_pic] = true
+ #        end
+ #        @Questions << q
+ #      end
+ #    else
+ #      @Questions = []
+ #    end
+ # end
+
+
+ #  def self.get_stared_questions(user_id)
+ #    @stared_questions = []
+ #    stared_question_ids = []
+ #    user = User.find_by_reecher_id(user_id)
+ #    stared_questions = user.votings #Voting.all
+ #    puts "stared_questions=#{stared_questions}"
+ #    if stared_questions.size > 0
+ #      stared_questions.each do |sq|
+ #        stared_question_ids << sq.question_id
+ #      end
+ #      @stared_questions = find(stared_question_ids)
+ #    end
+ #    @stared_questions
+ #  end
+
+ class << self
+    def feed(arg)
+      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid) AND solution_id IN (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q WHERE (posted_by_uid IN (SELECT friend_reecher_id FROM users INNER JOIN friendships ON users.reecher_id = friendships.friend_reecher_id WHERE friendships.reecher_id = \'#{arg.reecher_id}\' AND (status = 'accepted')) OR posted_by_uid = \'#{arg.reecher_id}\') AND q.created_at >= \'#{arg.created_at}\' ORDER BY q.created_at DESC"
+      ActiveRecord::Base.connection.execute(sql_str)
+    end
+
+    def stared(arg)
+      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.id IN(select v.question_id from votings v INNER JOIN questions ON v.question_id = questions.id WHERE questions.posted_by_uid = \'#{arg.reecher_id}\') ORDER BY q.created_at DESC"
+      ActiveRecord::Base.connection.execute(sql_str)
+    end
+
+    def self(arg)
+      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.posted_by_uid = \'#{arg.reecher_id}\' OR q.id IN(select s.question_id from purchased_solutions p INNER JOIN solutions s ON p.solution_id = s.id WHERE p.user_id = #{arg.id}) ORDER BY q.created_at DESC"
+      ActiveRecord::Base.connection.execute(sql_str)
+    end
+
+    def get_questions(type, current_user)
+      questions_list = send(type, current_user)
+    end
+
+    def get_stared_questions(user_id)
+      @stared_questions = []
+      stared_question_ids = []
+      user = User.find_by_reecher_id(user_id)
+      stared_questions = user.votings #Voting.all
+      puts "stared_questions=#{stared_questions}"
+      if stared_questions.size > 0
+        stared_questions.each do |sq|
+          stared_question_ids << sq.question_id
+        end
+        @stared_questions = find(stared_question_ids)
+      end
+      @stared_questions
+    end
   end
 
-  # Instead of constructing a JSON array it is better to write a json file usin jbuilder which renders from index action
- def self.filterforuser user_id , question_list_obj
-   questions = question_list_obj
-   @Questions =[]
-   if !questions.blank?
-      questions.each do |q|
-        question_asker = q.posted_by_uid
-        #puts "question_askerquestion_asker=#{question_asker}"
-        question_user = User.find_by_reecher_id(question_asker)
-        #question_asker_name = q.posted_by
-        question_asker_name = question_user.full_name
-        question_is_public = q.is_public
-        @pqtfs = PostQuestionToFriend.where("question_id = ?", q.question_id)
-        solution_posted_by_login_user = Solution.where( "solver_id = ? AND question_id =? ", user_id , q.question_id)
-        #puts "!solution_posted_by_login_user=#{question_asker}"
-        if !solution_posted_by_login_user.empty?
-          solution_posted_by_login_user_id = solution_posted_by_login_user.collect{|sol| sol.id}
-        end
-        purchased_sl_by_question_owner = PurchasedSolution.where(:user_id => question_asker)
-        if !purchased_sl_by_question_owner.empty?
-          purchased_sl_by_question_owner = purchased_sl_by_question_owner.collect {|s| s.solution_id}
-        end
-        reecher_user_associated_to_question=@pqtfs.collect{|pq| pq.friend_reecher_id} if !@pqtfs.blank?
-
-        if ((!purchased_sl_by_question_owner.blank?) && (!solution_posted_by_login_user_id.blank?))
-          match_ids= solution_posted_by_login_user_id & purchased_sl_by_question_owner
-          if match_ids.size > 0
-            #q[:question_referee] = q.posted_by
-            q[:question_referee] = question_asker_name
-            q[:no_profile_pic] = false
-          end
-        elsif (( user_id ==  question_asker) || question_is_public)
-          #q[:question_referee] = q.posted_by
-          q[:question_referee] = question_asker_name
-          q[:no_profile_pic] = false
-        elsif(!@pqtfs.blank? && (reecher_user_associated_to_question.include? user_id))
-          #q[:question_referee] = q.posted_by
-          q[:question_referee] = question_asker_name
-          q[:no_profile_pic] = false
-        else
-          q[:question_referee] = "Friend"
-          q[:no_profile_pic] = true
-        end
-        @Questions << q
-      end
-    else
-      @Questions = []
-    end
- end
-
-
-  def self.get_stared_questions(user_id)
-    @stared_questions = []
-    stared_question_ids = []
-    user = User.find_by_reecher_id(user_id)
-    stared_questions = user.votings #Voting.all
-    puts "stared_questions=#{stared_questions}"
-    if stared_questions.size > 0
-      stared_questions.each do |sq|
-        stared_question_ids << sq.question_id
-      end
-      @stared_questions = find(stared_question_ids)
-    end
-    @stared_questions
+  def create_question_id
+    self.question_id=gen_question_id
   end
 
   def avatar_url

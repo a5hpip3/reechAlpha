@@ -1,8 +1,9 @@
-<% if @questions.empty? then %>
+<% if @questions.nil? then %>
   <h3> no questions yet </h3>
 <% else %>
-  <% @questions.each do |question| %>
-		<div class="col-md-4"> 
+<% @questions.each do |q| %>
+  <% question = Question.find_by_question_id(q[0]) %>
+  	<div class="col-md-4"> 
       <div class="box box-solid bg-light-blue">
           <div class="box-header">
               <h3 class="box-title" ><%= question.posted_by %></h3>
@@ -14,22 +15,6 @@
           </div>
       </div>
     </div>
-
-    <!-- <div class="questionbody" id="<%=question.question_id %>"> 
-    		<div class="questionimg"><%=image_tag 'default_avatar.png' %></div>
-    		<div class="questiontext">
-      		<blockquote>
-      		  <p><%= link_to question.post, question %></p>
-      	  		<small><%= question.posted_by %></small>
-      		</blockquote>
-      		<div class="questiontime">
-      	  		<label class="label">asked <%= TimelineBeautify.beauty_time(question.created_at) %></label>
-      	  		<label class="label"><%= question.posted_solutions.count %> answers</label>
-			  	</div>
-    		</div>
-  			<%= render :partial=>"solutions/newsolution",:locals=>{:question=>question} %>
-  			</div> -->
-
   <% end %>
 <% end %>
 
