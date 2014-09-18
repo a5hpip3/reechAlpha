@@ -9,7 +9,7 @@ json.questions @questions do |q|
 			json.question_referee question.user.full_name
 			json.no_profile_pic false
 		else
-			json.question_referee question.user.full_name
+			json.question_referee "Friend"
 	        json.no_profile_pic true
 		end
 	end
