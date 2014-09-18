@@ -2,7 +2,7 @@ module Api
 	module V1
 	  require "open-uri"
 		class UserProfileController < ApiController
-		before_filter :restrict_access, :except => [:forget_password]
+		before_filter :restrict_access, :except => [:index, :forget_password]
 		respond_to :json
 
 				def index
