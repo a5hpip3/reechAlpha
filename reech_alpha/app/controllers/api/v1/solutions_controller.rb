@@ -14,9 +14,6 @@ module Api
 				params[:solution][:picture] = params[:file] unless params[:file].blank? 
 			end
 
-
-
-
 			def purchase_solution
 				user = User.find_by_reecher_id(params[:user_id])
 				solution = Solution.find(params[:solution_id])
