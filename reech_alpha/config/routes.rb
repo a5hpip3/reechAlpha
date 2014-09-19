@@ -12,6 +12,7 @@ Reech::Application.routes.draw do
       end
       resources :questions
       resources :solutions
+      delete 'sessions/log_out' => "sessions#destroy"
       resources :sessions
       resources :user_settings
     end
