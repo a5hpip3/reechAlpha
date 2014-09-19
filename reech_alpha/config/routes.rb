@@ -13,6 +13,7 @@ Reech::Application.routes.draw do
       resources :questions
       resources :solutions
       resources :sessions
+      resources :user_settings
     end
 
     namespace :v1 do

@@ -41,7 +41,7 @@ module Api
 							    device.save
 							  end  
 							end  
-							msg = { :status => 201, :message => "Success!", :api_key => @api_key, :user_id => @user_id.reecher_id,:email=>@user_id.email,:phone_number=>@user_id.phone_number.to_i}
+							msg = { :status => 201, :message => "Success!", :api_key => @api_key, :user_id => @user_id.reecher_id,:email=>@user_id.email,:phone_number=>@user_id.phone_number.to_i, current_user: @user_id.attributes.merge(@user_id.user_profile.picture_url)}
 							logger.debug "******Response To #{request.remote_ip} at #{Time.now} => #{msg}"
 							format.json { render :json => msg }  # note, no :location or :status options
 						end
