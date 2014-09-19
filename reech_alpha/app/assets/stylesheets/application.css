@@ -1,3 +1,8 @@
 /*
  *= require_self
+ *= require bootstrap.min.css
+ *= require font-awesome.min.css
+ *= require ionicons.min.css
+ 
+ *= require reechpro.css
  */
