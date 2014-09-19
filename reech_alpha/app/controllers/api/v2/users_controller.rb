@@ -1,6 +1,9 @@
 module Api
   module V2
     class UsersController < BaseController
+      before_filter :require_current_user, only: [:friends, :leader_board]
+
+
       def friends
         render json: current_user.friends.to_json
       end
