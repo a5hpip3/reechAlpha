@@ -240,6 +240,8 @@ GEM
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
+    rack-cors (0.2.6)
+      rack
     rack-oauth2 (1.0.7)
       activesupport (>= 2.3)
       attr_required (>= 0.0.5)
@@ -405,6 +407,7 @@ DEPENDENCIES
   private_pub (~> 1.0.3)
   pushmeup (= 0.2.0)!
   rabl
+  rack-cors
   rails (= 3.2.13)
   rails-erd
   recognition

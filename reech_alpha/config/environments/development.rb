@@ -42,6 +42,13 @@ Reech::Application.configure do
 
   #required by devise. Set host to correct host in production mode
 
+  config.middleware.insert_before "ActionDispatch::Static", "Rack::Cors" do
+    allow do
+      origins '*'
+      resource '*', :headers => :any, :methods => [:get, :post, :options]
+    end
+  end
+
   config.action_mailer.default_url_options = { :host => 'ec2-54-201-116-44.us-west-2.compute.amazonaws.com:3000' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
@@ -59,7 +66,7 @@ Reech::Application.configure do
     :bucket => 'reechattachmentstorage',
     :access_key_id => 'AKIAIVK7XM7Q7YX72IDQ',
     :secret_access_key => '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'
-    
+
   },
   :s3_multipart_min_part_size => 20971520
  }

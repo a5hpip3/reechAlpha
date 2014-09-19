@@ -5,7 +5,7 @@ module Api
 			def create
 				user_session = UserSession.new(params[:session][:user_details])
 				if user_session.save
-					render json: {user: current_user, user_profile: current_user.user_profile}
+					render json: {current_user: current_user}
 				else
 					render status: 401, json: {errors: user_session.errors}
 				end
