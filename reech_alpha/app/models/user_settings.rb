@@ -1,9 +1,9 @@
 class UserSettings < ActiveRecord::Base
-  attr_accessible :emailnotif_is_enabled, :location_is_enabled, :notify_linked_to_question, :notify_question_when_answered, :notify_solution_got_highfive, :pushnotif_is_enabled
+  attr_accessible :emailnotif_is_enabled, :notify_when_my_stared_question_get_answer, :notify_when_someone_grab_my_answer, :notify_audience_if_ask_for_help, :location_is_enabled, :notify_linked_to_question, :notify_question_when_answered, :notify_solution_got_highfive, :pushnotif_is_enabled, :reecher_id
 
   belongs_to :user,:primary_key=>:reecher_id,:foreign_key=>:reecher_id
 
-  before_create :set_values
+  #before_create :set_values
 
   def set_values
     self.location_is_enabled = true
