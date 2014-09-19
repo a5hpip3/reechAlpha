@@ -12,6 +12,7 @@ Reech::Application.routes.draw do
       end
       resources :questions
       resources :solutions
+      post "post_question_with_image" => "questions#create"
       delete 'sessions/log_out' => "sessions#destroy"
       resources :sessions
       resources :user_settings
