@@ -12,13 +12,16 @@ module Api
     	private
 
     	def set_create_params
-    		params[:question][:posted_by_uid] = current_user.reecher_id
-    		params[:question][:posted_by] = current_user.full_name
-    		params[:question][:ups] = 0
-    		params[:question][:downs] = 0
-    		params[:question][:Charisma] = 5
-    		params[:question][:is_public] = true
-    		params[:question][:avatar] = StringIO.new(Base64.decode64(params[:question][:avatar]))
+            if action_name == "post_question_with_image"
+                params[:question] = JSON.parse(params[:question])
+                params[:question][:avatar] = params[:questions_avatar]
+            end
+            puts "@@@@@@@@@@@@@@@@"
+            puts params[:question]
+    		if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?) 
+                params[:question][:is_public] = true
+            end
+    		
     	end
     end
   end

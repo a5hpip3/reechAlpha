@@ -60,15 +60,15 @@ Reech::Application.configure do
   authentication:       'login',
   enable_starttls_auto: true  }
 
-  config.paperclip_defaults = {
-  :storage => :s3,
-  :s3_credentials => {
-    :bucket => 'reechattachmentstorage',
-    :access_key_id => 'AKIAIVK7XM7Q7YX72IDQ',
-    :secret_access_key => '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'
-
-  },
-  :s3_multipart_min_part_size => 20971520
- }
-
+ #  config.paperclip_defaults = {
+ #  :storage => :s3,
+ #  :s3_credentials => {
+ #    :bucket => 'reechattachmentstorage',
+ #    :access_key_id => 'AKIAIVK7XM7Q7YX72IDQ',
+ #    :secret_access_key => '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'
+    
+ #  },
+ #  :s3_multipart_min_part_size => 20971520
+ # }
+ Paperclip.options[:command_path] = "/usr/local/bin/convert"
 end
