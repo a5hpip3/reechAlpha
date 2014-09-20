@@ -3,9 +3,10 @@ Reech::Application.routes.draw do
   namespace :api, defaults: {format: 'json'} do
 
     namespace :v2 do
+      devise_for :users, singular: :user
       resources :groups
       resources :categories
-      resources :users do
+      resources :users, only: [:index] do
         collection do
           get 'friends', 'leader_board'
         end

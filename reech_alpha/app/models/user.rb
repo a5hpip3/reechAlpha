@@ -2,7 +2,7 @@
 class User < ActiveRecord::Base
 	# Include default devise modules. Others available are:
 	# :confirmable, :lockable, :timeoutable and :omniauthable
-	#devise :database_authenticatable, :registerable,
+	devise :database_authenticatable, :registerable
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
@@ -11,19 +11,13 @@ class User < ActiveRecord::Base
 	acts_as_voter
 	serialize :scores, Hash
 
-	include BCrypt
+	#include BCrypt
 	include Scrubber
 
 	#For OmniAuth
 	has_many :authorizations, :dependent => :destroy
 
 
-	#For Authlogic
-	acts_as_authentic do |c|
-		c.ignore_blank_passwords = true #ignoring passwords
-		c.login_field = :phone_number
-		c.validate_login_field =false
-	end
 
 	attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :points
 	serialize :omniauth_data, JSON
@@ -33,18 +27,6 @@ class User < ActiveRecord::Base
 	validates :email, uniqueness: true ,:allow_blank => true, :allow_nil => true
 	validates :phone_number, uniqueness: true ,:allow_blank => true, :allow_nil => true
 	#Authentications
-	validate do |user|
-		if user.new_record? #adds validation if it is a new record
-			user.errors.add(:first_name, "First Name Field cannot be blank") if user.first_name.blank?
-			user.errors.add(:last_name, "Last Name Field cannot be blank") if user.last_name.blank?
-			user.errors.add(:password, "is required") if user.password.blank?
-		 elsif !(!user.new_record? && user.password.blank?) #adds validation only if password is modified
-			user.errors.add(:first_name, "First Name Field cannot be blank") if user.first_name.blank?
-			user.errors.add(:first_name, "Last Name Field cannot be blank") if user.last_name.blank?
-			user.errors.add(:password, "is required") if user.password.blank?
-			user.errors.add(:password, " and should be atleast 4 characters long.") if user.password.length < 4 || user.password_confirmation.length < 4
-		end
-	end
 
 	# friendships
 	has_many :friendships,:primary_key=>"reecher_id",:foreign_key=>'reecher_id'
