@@ -4,17 +4,17 @@ class ApplicationController < ActionController::Base
   include NewsfeedsStreamsData
   helper :all
   #protect_from_forgery
-  helper_method :current_user_session, :current_user, :require_user, :fb_user, :recipients
+  helper_method :require_user, :fb_user, :recipients
   before_filter :add_common_headers #Filter for add response headers for all JSON API calls
-  before_filter :log_request_data 
+  before_filter :log_request_data
 
-  
+
   private
   def recipients
     curr_u = current_user
     User.all.reject { |u| u.reecher_id == curr_u.reecher_id }.compact
   end
-  
+
   def set_flash_message(key, kind, options = {})
     message = find_message(kind, options)
     flash[key] = message if message.present?
@@ -22,16 +22,6 @@ class ApplicationController < ActionController::Base
 
   def find_message(kind, options = {})
     I18n.t("#{controller_name}.#{kind}", options)
-  end
-
-  def current_user_session
-    return @current_user_session if defined?(@current_user_session)
-    @current_user_session = UserSession.find
-  end
-
-  def current_user
-    return @current_user if defined?(@current_user)
-    @current_user = current_user_session && current_user_session.user
   end
 
   def require_user
@@ -47,8 +37,8 @@ class ApplicationController < ActionController::Base
   end
 
   def fb_user
-client = FBGraph::Client.new(:client_id => GRAPH_APP_ID, :secret_id => GRAPH_SECRET, :token => token) 
-  return @fbuser  
+client = FBGraph::Client.new(:client_id => GRAPH_APP_ID, :secret_id => GRAPH_SECRET, :token => token)
+  return @fbuser
   @fbuser = client.selection.me.info!
   end
 
@@ -61,14 +51,14 @@ client = FBGraph::Client.new(:client_id => GRAPH_APP_ID, :secret_id => GRAPH_SEC
   def add_common_headers
     if request.format == "json"
       response['Access-Control-Allow-Origin'] = '*'
-      response['Access-Control-Allow-Methods'] = 'DELETE, HEAD, GET, OPTIONS, POST, PUT' 
+      response['Access-Control-Allow-Methods'] = 'DELETE, HEAD, GET, OPTIONS, POST, PUT'
     end
-  end 
+  end
 
   def log_request_data
     if request.format == 'json'
       logger.debug "******Request from #{request.remote_ip} at #{Time.now} => #{request.params}"
     end
-  end  
-  
+  end
+
 end

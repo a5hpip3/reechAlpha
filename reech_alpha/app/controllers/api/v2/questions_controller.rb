@@ -18,10 +18,10 @@ module Api
             end
             puts "@@@@@@@@@@@@@@@@"
             puts params[:question]
-    		if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?) 
+    		if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?)
                 params[:question][:is_public] = true
             end
-    		
+
     	end
     end
   end

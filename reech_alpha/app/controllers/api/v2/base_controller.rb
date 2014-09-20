@@ -7,7 +7,7 @@ module Api
 				render status: 401, json: {error: "Not authenticated"} unless current_user
 			end
 
-			
+
     end
   end
 end
