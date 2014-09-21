@@ -4,6 +4,7 @@ module Api
 			respond_to :json
 
 			def create
+				
 				self.resource = warden.authenticate!({ :scope => resource_name, :recall => "#{controller_path}#failure" })
 		    sign_in(resource_name, resource)
 		    render json: {success: true, user: resource}

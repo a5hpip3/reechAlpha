@@ -1,8 +1,9 @@
 module Api
   module V2
     class QuestionsController < BaseController
-    	before_filter :require_current_user
+    	#before_filter :require_current_user
     	before_filter :set_create_params, only: [:create]
+
 
       def show
         question = Question.find(params[:id])

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140920060149) do
+ActiveRecord::Schema.define(:version => 20140921135358) do
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -385,8 +385,10 @@ ActiveRecord::Schema.define(:version => 20140920060149) do
     t.datetime "remember_created_at"
     t.string   "unlock_token"
     t.datetime "locked_at"
+    t.string   "authentication_token"
   end
 
+  add_index "users", ["authentication_token"], :name => "index_users_on_authentication_token"
   add_index "users", ["confirmation_token"], :name => "index_users_on_confirmation_token", :unique => true
   add_index "users", ["first_name"], :name => "index_users_on_first_name"
   add_index "users", ["phone_number"], :name => "index_users_on_phone_number"
