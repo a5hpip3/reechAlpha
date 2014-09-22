@@ -320,7 +320,7 @@ module ApplicationHelper
   end
 
   def send_posted_question_notification_to_chosen_phones audien_details ,user,question,push_title_msg,push_contant_str,linked_quest_type
-    if(!audien_details.blank? && audien_details.has_key?("phone_numbers") && !audien_details["phone_numbers"].empty?)
+    if(!audien_details.blank? && audien_details.has_key?("phone_numbers") && !audien_details["phone_numbers"].nil?)
       audien_details["phone_numbers"].each do |number|
         phone_user = User.find_by_phone_number(number)
         if(phone_user.present? && make_friendship_standard(phone_user.reecher_id, user.reecher_id) )
@@ -380,7 +380,7 @@ module ApplicationHelper
   end
        
   def send_posted_question_notification_to_chosen_emails audien_details ,user,question,push_title_msg,push_contant_str,linked_quest_type
-    if(!audien_details.blank? && audien_details.has_key?("emails") && !audien_details["emails"].empty?)
+    if(!audien_details.blank? && audien_details.has_key?("emails") && !audien_details["emails"].nil?)
       audien_reecher_ids = []
       audien_details["emails"].each do |email|
         email_user = User.find_by_email(email)

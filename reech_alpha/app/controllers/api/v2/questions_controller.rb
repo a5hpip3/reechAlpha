@@ -3,7 +3,7 @@ module Api
     class QuestionsController < BaseController
     	before_filter :require_current_user
     	before_filter :set_create_params, only: [:create]
-
+        after_filter :send_notifications, only: [:create]
 
       def show
         question = Question.find(params[:id])
@@ -17,13 +17,21 @@ module Api
                 params[:question] = JSON.parse(params[:question])
                 params[:question][:avatar] = params[:questions_avatar]
             end
-            puts "@@@@@@@@@@@@@@@@"
-            puts params[:question]
-    		if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?)
+            if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?)
                 params[:question][:is_public] = true
             end
 
     	end
+
+        def send_notifications
+            puts "@@@@@@@@@@@@@@@@@@@"
+            puts "entered notifications"
+            if !params[:question][:audien_details].nil?
+                puts "enter worker"
+                QuestionsWorker.perform_async(action_name, params[:question]["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
+                puts "done worker"
+            end
+        end
     end
   end
 end
