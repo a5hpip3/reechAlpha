@@ -4,7 +4,8 @@ module Api
       before_filter :require_current_user
 
       def index
-        render json: current_user.owned_groups
+      	@groups = current_user.owned_groups
+        render "index.json.jbuilder"
       end
 
     end
