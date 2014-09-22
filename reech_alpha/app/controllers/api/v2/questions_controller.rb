@@ -5,6 +5,12 @@ module Api
     	before_filter :set_create_params, only: [:create]
         after_filter :send_notifications, only: [:create]
 
+      def index
+        questions = Question.page(params[:page] ? params[:page] : 1).per(params[:per_page] ? params[:per_page] : 3)        
+        render json: [questions, Question.count]
+      end
+
+
       def show
         question = Question.find(params[:id])
         render json: question.as_json(include: :solutions)
