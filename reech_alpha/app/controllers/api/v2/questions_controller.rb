@@ -6,8 +6,14 @@ module Api
         after_filter :send_notifications, only: [:create]
 
       def index
-        questions = Question.page(params[:page] ? params[:page] : 1).per(params[:per_page] ? params[:per_page] : 3)
-        render json: [questions, Question.count]
+        if params[:category_ids].present?
+            questions = Question.find_by_category({category_ids: params[:category_ids]}).page(params[:page] ? params[:page].to_i : 1).per_page(params[:per_page] ? params[:per_page].to_i : 3)
+            count = Question.find_by_category({category_ids: params[:category_ids]}).count
+        else   
+            questions = Question.page(params[:page] ? params[:page].to_i : 1).per(params[:per_page] ? params[:per_page].to_i : 3)        
+            count = Question.count
+        end
+        render json: [questions, count]
       end
 
 
