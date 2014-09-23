@@ -4,7 +4,11 @@ Reech::Application.routes.draw do
 
     namespace :v2 do
       devise_for :users, singular: :user
-      resources :groups
+      resources :groups do
+        collection do
+          post "associate_user_to_group"
+        end
+      end
       resources :categories
       resources :users, only: [:index] do
         collection do
