@@ -6,7 +6,7 @@ module Api
         after_filter :send_notifications, only: [:create]
 
       def index
-        questions = Question.page(params[:page] ? params[:page] : 1).per(params[:per_page] ? params[:per_page] : 3)        
+        questions = Question.page(params[:page] ? params[:page] : 1).per(params[:per_page] ? params[:per_page] : 3)
         render json: [questions, Question.count]
       end
 
@@ -29,15 +29,11 @@ module Api
 
     	end
 
-        def send_notifications
-            puts "@@@@@@@@@@@@@@@@@@@"
-            puts "entered notifications"
-            if !params[:question][:audien_details].nil?
-                puts "enter worker"
-                QuestionsWorker.perform_async(action_name, params[:question]["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
-                puts "done worker"
-            end
-        end
+      def send_notifications
+          if !params[:question][:audien_details].nil?
+              QuestionsWorker.perform_async(action_name, params[:question]["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
+          end
+      end
     end
   end
 end

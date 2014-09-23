@@ -1,10 +1,7 @@
 class Solution < ActiveRecord::Base
 	attr_accessible :body, :solver, :solver_id, :down, :up, :ask_charisma, :linked_user, :question_id, :is_public
 	acts_as_votable
-	belongs_to :forquestion,
-	:class_name => 'Question',
-	:primary_key => 'question_id',
-	:foreign_key => 'question_id'
+	belongs_to :question
 
 	belongs_to :wrote_by,
 	:class_name => 'User',
@@ -20,7 +17,7 @@ class Solution < ActiveRecord::Base
 
 	validates_attachment :picture, :content_type => { :content_type => "image/jpeg" } , unless: Proc.new { |record| record[:picture].nil? }
 	after_create :notify_users
-  
+
 	def buy(soln)
 		solution.ask_charisma = soln
 	end
@@ -52,8 +49,8 @@ class Solution < ActiveRecord::Base
 		@geometry[style] ||= Paperclip::Geometry.from_file(photo_path)
 	end
 
-	def notify_users 	
-		NotifyUsersWorker.perform_async(self.id)     
-	end	
+	def notify_users
+		NotifyUsersWorker.perform_async(self.id)
+	end
 
 end

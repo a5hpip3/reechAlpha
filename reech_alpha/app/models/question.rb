@@ -15,8 +15,9 @@ class Question < ActiveRecord::Base
 
   belongs_to :user, :foreign_key => 'posted_by_uid', :primary_key => 'reecher_id'
   has_many :votings, :dependent => :destroy
-  has_many :solutions, :primary_key=>'question_id',:foreign_key => 'question_id',:dependent => :destroy
-  has_many :linked_questions, :foreign_key => 'question_id', :primary_key => 'question_id'
+  has_many :solutions, :dependent => :destroy
+  has_many :linked_questions
+  
   has_many :posted_solutions,
 	:class_name => 'Solution',
 	:primary_key=>'question_id',

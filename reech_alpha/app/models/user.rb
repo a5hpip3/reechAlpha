@@ -17,9 +17,6 @@ class User < ActiveRecord::Base
 
 	#For OmniAuth
 	has_many :authorizations, :dependent => :destroy
-
-
-
 	attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :points
 	serialize :omniauth_data, JSON
 	#Scrubber Fields
@@ -52,15 +49,21 @@ class User < ActiveRecord::Base
 	has_many :post_question_to_friends
 
 	has_many :votings, :through => :questions , :dependent => :destroy
+  has_many :purchased_solutions
+	has_many :solutions, :through => :purchased_solutions
 
+	has_many :answered_solutions, class_name: "Solution", primary_key: 'reecher_id', foreign_key: 'solver_id'
+
+	has_many :preview_solutions
+
+	#Linked questions
+	has_many :linked_questions, :primary_key=>"reecher_id", :foreign_key=>"user_id"
+	has_many :linked_actual_questions, through: :linked_questions
 
   has_and_belongs_to_many :groups, join_table: "groups_users"
   has_many :owned_groups, class_name: "Group", primary_key: 'reecher_id', foreign_key: 'reecher_id'
 	# purchased solutions
-	has_many :purchased_solutions
-	has_many :solutions, :through => :purchased_solutions
 
-	has_many :answered_solutions, class_name: "Solution", primary_key: 'reecher_id', foreign_key: 'solver_id'
   has_many :leader_boards
 	#Messages
 	has_many :messages, class_name: 'Message', foreign_key: 'user_id'
@@ -82,10 +85,7 @@ class User < ActiveRecord::Base
 	has_one :user_settings, :primary_key=>:reecher_id,:foreign_key=>:reecher_id, :dependent => :destroy
   accepts_nested_attributes_for :user_settings
 
-	has_many :preview_solutions
 
-	#Linked questions
-	has_many :linked_questions, :primary_key=>"reecher_id", :foreign_key=>"user_id"
 
 	# Devices association for push notifications
 	has_many :devices, :primary_key=>"reecher_id", :foreign_key=>"reecher_id"
@@ -212,5 +212,8 @@ class User < ActiveRecord::Base
   		user_settings.emailnotif_is_enabled
   	end
   end
+
+	## questions selection for a given user
+
 
 end
