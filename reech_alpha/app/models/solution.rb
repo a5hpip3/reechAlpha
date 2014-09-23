@@ -1,7 +1,7 @@
 class Solution < ActiveRecord::Base
 	attr_accessible :body, :solver, :solver_id, :down, :up, :ask_charisma, :linked_user, :question_id, :is_public
 	acts_as_votable
-	belongs_to :question
+	belongs_to :question, foreign_key: :question_id, primary_key: :question_id
 
 	belongs_to :wrote_by,
 	:class_name => 'User',
