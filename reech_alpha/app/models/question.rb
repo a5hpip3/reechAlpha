@@ -16,6 +16,7 @@ class Question < ActiveRecord::Base
   belongs_to :user, :foreign_key => 'posted_by_uid', :primary_key => 'reecher_id'
   has_many :votings, :dependent => :destroy
   has_many :solutions, foreign_key: :question_id, primary_key: :question_id, :dependent => :destroy
+  has_many :purchased_solutions, through: :solutions
   has_many :linked_questions, :foreign_key => 'question_id', :primary_key => 'question_id'
 
   has_many :posted_solutions,
@@ -84,11 +85,23 @@ class Question < ActiveRecord::Base
   scope :linked, ->(user) {includes(:linked_questions).where("linked_questions.user_id = '#{user.reecher_id}'")}
   scope :created_by, ->(user) {where("posted_by_uid = '#{user.reecher_id}'")}
   scope :posted_to, ->(user) {includes(:post_question_to_friends).where("post_question_to_friends.friend_reecher_id='#{user.reecher_id}'")}
-  scope :solutions_purchased, ->(user) do
-
+  scope :all_feed, -> (user) do
+    pquestions = user.purchased_questions.collect(&:id)
+    friends = user.friends.collect(&:reecher_id)
+    includes(:votings).includes(:linked_questions).includes(:post_question_to_friends).
+    where("questions.id IN (?) OR questions.posted_by_uid = ? OR
+    votings.user_id = ? OR
+    linked_questions.user_id = ? OR
+    post_question_to_friends.friend_reecher_id= ? OR
+    (questions.is_public=? AND questions.posted_by_uid IN (?))",
+    pquestions, user.reecher_id, user.id, user.reecher_id, user.reecher_id, true, friends)
   end
 
-  scope :all_feed, -> (user){includes(:votings).includes(:linked_questions).where("votings.user_id = #{user.id} OR linked_questions.user_id = '#{user.reecher_id}'")}
+  scope :mine, -> (user) do
+    pquestions = user.purchased_questions.collect(&:id)
+    where("id IN (?) OR posted_by_uid = ?
+    ", pquestions, user.reecher_id)
+  end
 
 
   ##################################################################
