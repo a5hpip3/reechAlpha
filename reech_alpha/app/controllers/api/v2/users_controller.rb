@@ -5,7 +5,8 @@ module Api
 
 
       def friends
-        render json: current_user.friends.to_json
+        #render json: current_user.friends.to_json
+        render "friends.json.jbuilder"
       end
 
       def leader_board
