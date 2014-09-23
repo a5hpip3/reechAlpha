@@ -3,6 +3,8 @@ class Solution < ActiveRecord::Base
 	acts_as_votable
 	belongs_to :question, foreign_key: :question_id, primary_key: :question_id
 
+	belongs_to :purchased_question, class_name: "::Question", foreign_key: :question_id, primary_key: :question_id
+
 	belongs_to :wrote_by,
 	:class_name => 'User',
 	:primary_key => 'reecher_id',

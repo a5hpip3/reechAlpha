@@ -50,9 +50,10 @@ class User < ActiveRecord::Base
 
 	has_many :votings
 	has_many :starred_questions, through: :votings
-	
+
   has_many :purchased_solutions
 	has_many :solutions, :through => :purchased_solutions
+	has_many :purchased_questions, through: :solutions
 
 	has_many :answered_solutions, class_name: "Solution", primary_key: 'reecher_id', foreign_key: 'solver_id'
 

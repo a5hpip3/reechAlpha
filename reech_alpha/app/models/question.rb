@@ -15,7 +15,7 @@ class Question < ActiveRecord::Base
 
   belongs_to :user, :foreign_key => 'posted_by_uid', :primary_key => 'reecher_id'
   has_many :votings, :dependent => :destroy
-  has_many :solutions, :dependent => :destroy
+  has_many :solutions, foreign_key: :question_id, primary_key: :question_id, :dependent => :destroy
   has_many :linked_questions, :foreign_key => 'question_id', :primary_key => 'question_id'
 
   has_many :posted_solutions,
@@ -82,6 +82,13 @@ class Question < ActiveRecord::Base
 
   scope :starred, ->(user) {includes(:votings).where("votings.user_id = #{user.id}")}
   scope :linked, ->(user) {includes(:linked_questions).where("linked_questions.user_id = '#{user.reecher_id}'")}
+  scope :created_by, ->(user) {where("posted_by_uid = '#{user.reecher_id}'")}
+  scope :posted_to, ->(user) {includes(:post_question_to_friends).where("post_question_to_friends.friend_reecher_id='#{user.reecher_id}'")}
+  scope :solutions_purchased, ->(user) do
+
+  end
+
+  scope :all_feed, -> (user){includes(:votings).includes(:linked_questions).where("votings.user_id = #{user.id} OR linked_questions.user_id = '#{user.reecher_id}'")}
 
 
   ##################################################################
