@@ -78,6 +78,14 @@ class Question < ActiveRecord::Base
     end
   end
 
+  # New scopes
+
+  scope :starred, ->(user) {includes(:votings).where("votings.user_id = #{user.id}")}
+  scope :linked, ->(user) {includes(:linked_questions).where("linked_questions.user_id = '#{user.reecher_id}'")}
+
+
+  ##################################################################
+
   def create_question_id
     self.question_id=gen_question_id
   end
