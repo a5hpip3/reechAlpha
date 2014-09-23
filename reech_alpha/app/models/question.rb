@@ -86,21 +86,21 @@ class Question < ActiveRecord::Base
   scope :created_by, ->(user) {where("posted_by_uid = '#{user.reecher_id}'")}
   scope :posted_to, ->(user) {includes(:post_question_to_friends).where("post_question_to_friends.friend_reecher_id='#{user.reecher_id}'")}
   scope :all_feed, -> (user) do
-    pquestions = user.purchased_questions.collect(&:id)
+    #pquestions = user.purchased_questions.collect(&:id)
     friends = user.friends.collect(&:reecher_id)
-    includes(:votings).includes(:linked_questions).includes(:post_question_to_friends).
-    where("questions.id IN (?) OR questions.posted_by_uid = ? OR
+    includes(:purchased_solutions).includes(:votings).includes(:linked_questions).includes(:post_question_to_friends).
+    where("purchased_solutions.user_id = ? OR questions.posted_by_uid = ? OR
     votings.user_id = ? OR
     linked_questions.user_id = ? OR
     post_question_to_friends.friend_reecher_id= ? OR
     (questions.is_public=? AND questions.posted_by_uid IN (?))",
-    pquestions, user.reecher_id, user.id, user.reecher_id, user.reecher_id, true, friends)
+    user.id, user.reecher_id, user.id, user.reecher_id, user.reecher_id, true, friends)
   end
 
   scope :mine, -> (user) do
-    pquestions = user.purchased_questions.collect(&:id)
-    where("id IN (?) OR posted_by_uid = ?
-    ", pquestions, user.reecher_id)
+    #pquestions = user.purchased_questions.collect(&:id)
+    includes(:purchased_solutions).where("purchased_solutions.user_id = ? OR posted_by_uid = ?
+    ", user.id, user.reecher_id)
   end
 
 
