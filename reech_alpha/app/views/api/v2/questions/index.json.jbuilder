@@ -1,8 +1,28 @@
-json.array! [1] do 
-	scope = params[:scope] ? params[:scope] : "all"
-	questions = Question.send(params[:scope], current_user) if params[:scope].present?
-	questions = questions.find_by_category(params[:category_id]) unless params[:category_id].blank?	
-	json.questions questions.page(params[:page]).per_page(3)
-	json.count questions.count
-end
+questions = Question.send(params[:scope], current_user)
+questions = questions.where(category_id: params[:category_id]) if !params[:category_id].blank?
 
+json.array! questions do |row|
+	posted_by = row.user.full_name
+	linked = false
+	unless row.is_public
+		linker = current_user.linked_questions.find_by_question_id(row.question_id)
+		if linker
+			linked_by = User.find_by_reecher_id(linker.linked_by_uid)
+			posted_by = linked_by.full_name
+			linked = true
+		elsif
+			posted_by = "Friend"
+		end
+	end
+	json.id row.id
+	json.post row.post
+	json.posted_by row.posted_by
+	json.avatar_file_name row.avatar_file_name
+	json.updated_at json.updated_at
+	json.posted_by posted_by
+	json.has_solution row.solutions.count > 0 ? true : false
+	json.is_linked linked
+	json.has_conversation false
+	json.is_starred row.votings.find_by_user_id(current_user.id) ? true : false
+
+end
