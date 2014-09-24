@@ -21,6 +21,7 @@ Reech::Application.routes.draw do
       delete 'sessions/log_out' => "sessions#destroy"
       resources :sessions
       resources :user_settings
+      resources :notifications
     end
 
     namespace :v1 do

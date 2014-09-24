@@ -48,6 +48,8 @@ class User < ActiveRecord::Base
 	has_many :questions, :primary_key=>"reecher_id",:foreign_key=>'posted_by_uid'
 	has_many :post_question_to_friends
 
+	has_many :notifications, :primary_key => "reecher_id", :foreign_key => "to_user"
+
 	has_many :votings
 	has_many :starred_questions, through: :votings
 
