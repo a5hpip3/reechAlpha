@@ -12,7 +12,7 @@ Reech::Application.routes.draw do
       resources :categories
       resources :users, only: [:index] do
         collection do
-          get 'friends', 'leader_board', 'profile'
+          get 'friends', 'leader_board','profile'
         end
       end
       resources :questions
@@ -21,7 +21,6 @@ Reech::Application.routes.draw do
       delete 'sessions/log_out' => "sessions#destroy"
       resources :sessions
       resources :user_settings
-      resources :notifications
     end
 
     namespace :v1 do
