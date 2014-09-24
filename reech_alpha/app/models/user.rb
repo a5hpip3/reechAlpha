@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
-	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids
+	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes
 	has_merit
 	acts_as_voter
 	serialize :scores, Hash

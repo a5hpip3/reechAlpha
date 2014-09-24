@@ -1,0 +1,8 @@
+json.questions_count current_user.questions.count 
+json.answered_solutions_count current_user.answered_solutions.count
+json.image_url current_user.user_profile.image_url
+json.curio_points  current_user.points
+json.high_fives current_user.user_profile.votes_for.count
+json.location current_user.user_profile.location
+json.full_name current_user.full_name
+json.phone_number current_user.phone_number
