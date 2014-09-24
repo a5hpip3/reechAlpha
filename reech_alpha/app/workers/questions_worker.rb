@@ -27,6 +27,7 @@ class QuestionsWorker
         User.where(reecher_id: reecher_ids).each do |audien_user|
           if !audien_user.linked_with_question?(question_id, user)
             audien_user.linked_questions.create(question_id: question_id, linked_by_uid: user.reecher_id, email_id: audien_user.email, phone_no: audien_user.phone_number,:linked_type=>'LINKED')
+            Notification.create(from_user: user.reecher_id, to_user: audien_user.reecher_id, message: "#{user.first_name} #{user.last_name} linked you to a question.", notification_type: "LINKED", record_id: question.id)
             if audien_user.has_email_notifications_enabled?("LINKED")
               @question = Question.find_by_question_id(question_id)
               UserMailer.email_linked_to_question(audien_user.email, user, @question).deliver  unless audien_user.email.blank?
@@ -45,6 +46,7 @@ class QuestionsWorker
       if(!audien_details.blank? && audien_details.has_key?("reecher_ids") && !audien_details["reecher_ids"].nil?)
         User.where(reecher_id: reecher_ids).each do |audien_user|
           pqtf = PostQuestionToFriend.create(user_id: user.reecher_id, friend_reecher_id: audien_user.reecher_id, question_id: question.question_id)
+          Notification.create(from_user: user.reecher_id, to_user: audien_user.reecher_id, message: "#{user.first_name} #{user.last_name} asked you a question.", notification_type: "ASK", record_id: question.id)
           if audien_user.has_device_notifications_enabled?("ASK")
             notify_string = push_contant_str + "," + "<"+user.full_name + ">" + "," + question.question_id.to_s + "," + Time.now().to_s
             Device.where(reecher_id: audien_user.reecher_id).each do |d|
@@ -63,6 +65,7 @@ class QuestionsWorker
     if(!audien_details.blank? && audien_details.has_key?("groups") && !audien_details["groups"].nil?)
       User.includes(:groups).where("groups.id = ?", audien_details["groups"]).each do |audien_user|
         pqtf = PostQuestionToFriend.create(user_id: user.reecher_id, friend_reecher_id: audien_user.reecher_id, question_id: question.question_id)
+        Notification.create(from_user: user.reecher_id, to_user: audien_user.reecher_id, message: "#{user.first_name} #{user.last_name} asked you a question.", notification_type: "ASK", record_id: question.id)
         if audien_user.has_device_notifications_enabled?("ASK")
           notify_string = push_contant_str + "," + "<"+user.full_name + ">" + "," + question.question_id.to_s + "," + Time.now().to_s
           Device.where(reecher_id: audien_user.reecher_id).each do |d|
