@@ -3,7 +3,7 @@ module Api
     class QuestionsController < BaseController
     	before_filter :require_current_user
     	before_filter :set_create_params, only: [:create]
-        after_filter :send_notifications, only: [:create]
+      after_filter :send_notifications, only: [:create]
 
       def index
         render "index.json.jbuilder"
