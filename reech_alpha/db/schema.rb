@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140923051226) do
+ActiveRecord::Schema.define(:version => 20140924072826) do
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -202,8 +202,11 @@ ActiveRecord::Schema.define(:version => 20140923051226) do
     t.string   "from_user"
     t.string   "to_user"
     t.text     "message"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",                           :null => false
+    t.datetime "updated_at",                           :null => false
+    t.string   "notification_type"
+    t.boolean  "read",              :default => false
+    t.string   "record_id"
   end
 
   create_table "oauth_access_grants", :force => true do |t|
