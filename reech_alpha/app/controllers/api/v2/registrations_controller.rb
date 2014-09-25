@@ -1,9 +1,8 @@
 module Api
 	module V2
-		class RegistrationsController < DeviseController
-			def update
+		class RegistrationsController < ::Devise::RegistrationsController
+			respond_to :json
 
-			end
 		end
 	end
 end
