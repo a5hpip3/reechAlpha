@@ -19,7 +19,10 @@ Reech::Application.routes.draw do
         post "post_question_with_image"
         post "star_question"
       end
-      resources :solutions
+      resources :solutions do
+        post "preview_solution"
+        post "purchase_solution"
+      end
       resources :sessions
       resources :user_settings
       resources :notifications
