@@ -7,9 +7,10 @@ current_user_is_linked_to_question = question.linked_questions.pluck(:user_id).i
 current_user_friend_with_question_owner = Friendship::are_friends(current_user.reecher_id, question.user.reecher_id)
 
 ##############question_details
-json.question_details do
+json.question do
   #json.extract! question, *question.attributes.keys
-  json.is_starred  question.is_stared?
+  json.id question.id
+  json.is_stared  question.is_stared?
   json.owner_location  question_owner.user_profile.location
   json.image_url question[:avatar_file_name] != nil ? question.avatar_original_url : nil
 

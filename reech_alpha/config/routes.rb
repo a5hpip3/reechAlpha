@@ -17,6 +17,7 @@ Reech::Application.routes.draw do
       end
       resources :questions do
         post "post_question_with_image"
+        post "star_question"
       end
       resources :solutions
       resources :sessions
