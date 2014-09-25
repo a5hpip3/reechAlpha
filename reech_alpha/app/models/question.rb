@@ -42,7 +42,7 @@ class Question < ActiveRecord::Base
   # scope :get_questions, ->(type, current_user) do
   #   questions_list = send(type, current_user)
   # end
-  scope :find_by_category, ->(arg){ where(category_id: arg[:category_ids])}
+  scope :find_by_category, ->(arg){ where(category_id: arg)} 
   class << self
     def feed(arg)
       sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid) AND solution_id IN (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q WHERE (posted_by_uid IN (SELECT friend_reecher_id FROM users INNER JOIN friendships ON users.reecher_id = friendships.friend_reecher_id WHERE friendships.reecher_id = \'#{arg.reecher_id}\' AND (status = 'accepted')) OR posted_by_uid = \'#{arg.reecher_id}\') AND q.created_at >= \'#{arg.created_at}\' ORDER BY created_at DESC"

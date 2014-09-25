@@ -1,7 +1,7 @@
 module Api
   module V2
     class QuestionsController < BaseController
-    	before_filter :require_current_user
+    	#before_filter :require_current_user
     	before_filter :set_create_params, only: [:create]
       after_filter :send_notifications, only: [:create]
 
@@ -11,8 +11,9 @@ module Api
 
 
       def show
-        question = Question.find(params[:id])
-        render json: question.as_json(include: :solutions)
+        # question = Question.find(params[:id])
+        # render json: question.as_json(include: :solutions)
+        render "show.json.jbuilder"
       end
 
     	private
