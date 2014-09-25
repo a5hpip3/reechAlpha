@@ -15,10 +15,10 @@ Reech::Application.routes.draw do
           get 'friends', 'leader_board','profile'
         end
       end
-      resources :questions
+      resources :questions do
+        post "post_question_with_image"
+      end
       resources :solutions
-      post "post_question_with_image" => "questions#create"
-      delete 'sessions/log_out' => "sessions#destroy"
       resources :sessions
       resources :user_settings
     end
