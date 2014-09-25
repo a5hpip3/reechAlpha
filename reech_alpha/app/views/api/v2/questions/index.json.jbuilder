@@ -3,15 +3,18 @@ questions = questions.where(category_id: params[:category_id]) if !params[:categ
 
 json.array! questions do |row|
 	posted_by = row.user.full_name
+	posted_by_avatar = row.user.user_profile.profile_pic_path
 	linked = false
 	unless row.is_public
 		linker = current_user.linked_questions.find_by_question_id(row.question_id)
 		if linker
 			linked_by = User.find_by_reecher_id(linker.linked_by_uid)
 			posted_by = linked_by.full_name
+			posted_by_avatar = linked_by.user_profile.profile_pic_path
 			linked = true
 		elsif
 			posted_by = "Friend"
+			posted_by_avatar = nil
 		end
 	end
 	json.id row.id
