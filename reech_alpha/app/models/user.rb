@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
 	# Include default devise modules. Others available are:
 	# :confirmable, :lockable, :timeoutable and :omniauthable
 	acts_as_token_authenticatable
-	devise :database_authenticatable, :registerable, :trackable, :validatable
+	devise :database_authenticatable, :registerable, :trackable, :validatable, :omniauthable, :omniauth_providers => [:facebook]
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
@@ -218,7 +218,16 @@ class User < ActiveRecord::Base
   	end
   end
 
-	## questions selection for a given user
+	## Omniauth facebook registration
+	def self.find_for_facebook_oauth(auth)
+    where(email: auth.info.email).first_or_create do |user|
+        user.provider = auth.provider
+        user.uid = auth.uid
+        user.email = auth.info.email
+        user.password = Devise.friendly_token[0,20]
+        user.name = auth.info.name   # assuming the user model has a name
+    end
+  end
 
 
 end
