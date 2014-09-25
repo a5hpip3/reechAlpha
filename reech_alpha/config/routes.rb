@@ -21,6 +21,7 @@ Reech::Application.routes.draw do
       resources :solutions
       resources :sessions
       resources :user_settings
+      resources :notifications
     end
 
     namespace :v1 do
