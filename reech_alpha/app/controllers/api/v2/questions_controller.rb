@@ -11,13 +11,17 @@ module Api
 
 
       def show
-        question = Question.find(params[:id])
-        render json: question.as_json(include: :solutions)
+        # question = Question.find(params[:id])
+        # render json: question.as_json(include: :solutions)
+        render "show.json.jbuilder"
       end
 
+      def star_question
+        current_user.starred_questions << Question.find(params[:question_id]) unless Question.find(params[:question_id]).nil?
+        render status: 201, json: "success"
+      end
     	private
-
-    	def set_create_params
+      def set_create_params
             if action_name == "post_question_with_image"
                 params[:question] = JSON.parse(params[:question])
                 params[:question][:avatar] = params[:questions_avatar]
