@@ -10,6 +10,7 @@ current_user_friend_with_question_owner = Friendship::are_friends(current_user.r
 json.question do
   #json.extract! question, *question.attributes.keys
   json.id question.id
+  json.post question.post
   json.is_stared  question.is_stared?
   json.owner_location  question_owner.user_profile.location
   json.image_url question[:avatar_file_name] != nil ? question.avatar_original_url : nil
@@ -35,11 +36,16 @@ json.solutions do
     solver_friend_with_current_user = Friendship::are_friends(current_user.reecher_id, solution.solver_id)
     solution_is_purchased = current_user.purchased_solutions.exists?(solution_id: solution.id.to_s)
     current_user_linked_solver = !question.linked_questions.where(user_id: solution.solver_id, linked_by_uid: current_user.reecher_id).blank?
+    json.id solution.id
     json.image_url  solution.picture_file_name != nil ? solution.picture_url : nil
     json.purchased  solution_is_purchased
     json.no_profile_pic  false
     json.profile_pic_clickable false
-
+    json.body solution.body
+    json.current_user_is_solver current_user_is_solver
+    json.solution_owner solution.wrote_by.full_name
+    json.solution_owner_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.  wrote_by.user_profile.thumb_picture_url : nil    
+    json.previewed solution.preview_solutions.exists?(user_id: current_user.id)
     if solution_is_purchased || current_user_is_solver
       json.solution_provider_name solution.wrote_by.full_name
       json.solver_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.wrote_by.user_profile.thumb_picture_url : nil

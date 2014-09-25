@@ -8,9 +8,12 @@ module Api
         #render json: current_user.friends.to_json
         render "friends.json.jbuilder"
       end
+
       def profile
+        @user = User.find(params["id"])
         render "index.json.jbuilder"
       end
+
       def leader_board
         render json: {current_user: current_user, top: (User.where(id: current_user.friends.pluck(:id) << current_user.id).order("#{params[:board_type]}_position DESC").limit(5))}
       end

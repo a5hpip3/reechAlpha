@@ -14,6 +14,9 @@ Reech::Application.routes.draw do
         collection do
           get 'friends', 'leader_board','profile', 'auth_face_book'
         end
+        member do
+          get 'profile'
+        end
       end
       resources :questions do
         post "post_question_with_image"
