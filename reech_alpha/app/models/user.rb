@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
-	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids
+	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes
 	has_merit
 	acts_as_voter
 	serialize :scores, Hash
@@ -47,6 +47,8 @@ class User < ActiveRecord::Base
 	#Questions
 	has_many :questions, :primary_key=>"reecher_id",:foreign_key=>'posted_by_uid'
 	has_many :post_question_to_friends
+
+	has_many :notifications, :primary_key => "reecher_id", :foreign_key => "to_user"
 
 	has_many :votings
 	has_many :starred_questions, through: :votings
