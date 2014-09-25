@@ -15,6 +15,10 @@ module Api
         render json: {current_user: current_user, top: (User.where(id: current_user.friends.pluck(:id) << current_user.id).order("#{params[:board_type]}_position DESC").limit(5))}
       end
 
+      def auth_face_book
+        render nothing: true
+      end
+
     end
   end
 end

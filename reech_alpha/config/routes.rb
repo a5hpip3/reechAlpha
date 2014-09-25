@@ -12,7 +12,7 @@ Reech::Application.routes.draw do
       resources :categories
       resources :users, only: [:index] do
         collection do
-          get 'friends', 'leader_board','profile'
+          get 'friends', 'leader_board','profile', 'auth_face_book'
         end
       end
       resources :questions do
