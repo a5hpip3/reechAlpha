@@ -30,7 +30,7 @@ Reech::Application.routes.draw do
       resources :sessions
       resources :user_settings
       resources :notifications
-
+      resources :reech_chats
     end
 
     namespace :v1 do

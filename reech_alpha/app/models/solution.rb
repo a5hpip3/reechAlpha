@@ -17,6 +17,8 @@ class Solution < ActiveRecord::Base
 	has_many :users, :through => :purchased_solutions
 	has_many :preview_solutions
 
+	has_many :reech_chats
+
 	validates_attachment :picture, :content_type => { :content_type => "image/jpeg" } , unless: Proc.new { |record| record[:picture].nil? }
 	after_create :notify_users
 

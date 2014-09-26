@@ -15,6 +15,8 @@ class User < ActiveRecord::Base
 	#include BCrypt
 	include Scrubber
 
+	has_many :reech_chats, primary_key: "id", foreign_key: "id"
+
 	#For OmniAuth
 	has_many :authorizations, :dependent => :destroy
 	attr_accessible :email, :first_name, :last_name, :password, :password_confirmation, :points
@@ -102,7 +104,6 @@ class User < ActiveRecord::Base
 
 	before_create :create_reecher_profile
 	after_create :assign_points
-
 
 	def self.create_from_omniauth_data(omniauth_data)
 		user = User.new(
@@ -216,6 +217,10 @@ class User < ActiveRecord::Base
   	when "INVITE"
   		user_settings.emailnotif_is_enabled
   	end
+  end
+
+  def chats(sol)
+  	reech_chats.where(solution_id: sol)
   end
 
 	## Omniauth facebook registration

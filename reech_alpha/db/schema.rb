@@ -11,7 +11,11 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(:version => 20140926110812) do
+=======
+ActiveRecord::Schema.define(:version => 20140926125416) do
+>>>>>>> Chat. (Phase -I)
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -289,6 +293,15 @@ ActiveRecord::Schema.define(:version => 20140926110812) do
     t.datetime "avatar_updated_at"
     t.text     "audien_user_ids"
     t.integer  "category_id"
+  end
+
+  create_table "reech_chats", :force => true do |t|
+    t.integer  "from_user_id"
+    t.integer  "to_user_id"
+    t.integer  "solution_id"
+    t.text     "message"
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "sashes", :force => true do |t|
