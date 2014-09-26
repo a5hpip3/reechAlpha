@@ -22,9 +22,9 @@ module Api
       end
     	private
       def set_create_params
-            if action_name == "post_question_with_image"
+            if params.has_key?(:file)
                 params[:question] = JSON.parse(params[:question])
-                params[:question][:avatar] = params[:questions_avatar]
+                params[:question][:avatar] = params[:file]
             end
             if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?)
                 params[:question][:is_public] = true
