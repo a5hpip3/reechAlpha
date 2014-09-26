@@ -1,3 +1,4 @@
+# Use this in web app. Not deletinf file.
 module Api
   module V2
     class OmniauthCallbacksController < ::Devise::OmniauthCallbacksController

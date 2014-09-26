@@ -18,9 +18,18 @@ module Api
 			def leader_board
 				render json: {current_user: current_user, top: (User.where(id: current_user.friends.pluck(:id) << current_user.id).order("#{params[:board_type]}_position DESC").limit(5))}
 			end
-
+      # Auth for facebook.
 			def auth_face_book
-				render nothing: true
+				user = User.where(email: params[:email]).first_or_create do |user|
+						user.provider = "facebook"
+						user.uid = params[:uid]
+						user.email = params[:email]
+						user.password = ::Devise.friendly_token[0,20]
+						user.first_name = params[:first_name]
+						user.last_name = params[:last_name]
+				end
+				# Pending update profile and make connections.
+				render json: user
 			end
 
 			private
