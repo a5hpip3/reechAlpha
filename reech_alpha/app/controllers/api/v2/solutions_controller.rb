@@ -20,6 +20,11 @@ module Api
          render status: 406, json: "Solution Purchased already!" 
         end   
       end
+      def solution_hi5
+        solution = Solution.find(params[:solution_id])
+        solution.liked_by(current_user)
+        render status: 200, json: {hi5_count: solution.votes_for.size}
+      end
      private
 
      def send_notification
