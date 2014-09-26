@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140925044016) do
+ActiveRecord::Schema.define(:version => 20140926110812) do
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -357,6 +357,8 @@ ActiveRecord::Schema.define(:version => 20140925044016) do
     t.boolean  "notify_when_my_stared_question_get_answer"
     t.boolean  "notify_audience_if_ask_for_help"
     t.boolean  "notify_when_someone_grab_my_answer"
+    t.text     "email_settings"
+    t.text     "message_settings"
   end
 
   create_table "users", :force => true do |t|
