@@ -12,7 +12,7 @@ Reech::Application.routes.draw do
       resources :categories
       resources :users, only: [:index] do
         collection do
-          get 'friends', 'leader_board','profile', 'auth_face_book'
+          get 'friends', 'leader_board'
         end
         member do
           get 'profile'
@@ -22,7 +22,10 @@ Reech::Application.routes.draw do
         post "post_question_with_image"
         post "star_question"
       end
-      resources :solutions
+      resources :solutions do
+        post "preview_solution"
+        post "purchase_solution"
+      end
       resources :sessions
       resources :user_settings
       resources :notifications
