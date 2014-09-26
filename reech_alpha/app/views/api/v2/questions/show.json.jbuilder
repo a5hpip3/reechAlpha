@@ -43,16 +43,19 @@ json.solutions do
     json.profile_pic_clickable false
     json.body solution.body
     json.current_user_is_solver current_user_is_solver
+    json.solution_owner_id solution.wrote_by.id
     json.solution_owner solution.wrote_by.full_name
     json.solution_owner_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.  wrote_by.user_profile.thumb_picture_url : nil    
     json.previewed solution.preview_solutions.exists?(user_id: current_user.id)
     if solution_is_purchased || current_user_is_solver
+      json.solution_provider_id solution.wrote_by.id
       json.solution_provider_name solution.wrote_by.full_name
       json.solver_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.wrote_by.user_profile.thumb_picture_url : nil
       json.profile_pic_clickable true
     else
       if solver_friend_with_current_user || current_user_linked_solver
         if current_user_is_owner || current_user_is_audien
+          json.solution_provider_id solution.wrote_by.id
           json.solution_provider_name solution.wrote_by.full_name
           json.solver_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.wrote_by.user_profile.thumb_picture_url : nil
           json.profile_pic_clickable true
@@ -65,6 +68,7 @@ json.solutions do
         if !(link = (current_user.friends.pluck(:reecher_id) & link).first).blank?
           if current_user_is_audien || question.post_question_to_friends.exists?(user_id: link)
             link = current_user_is_audien ? question_owner : User.find_by_reecher_id(link)
+            json.solution_provider_id link.id
             json.solution_provider_name "Friend of #{link.full_name}"
             json.solver_image link.user_profile.picture_file_name != nil ? link.user_profile.thumb_picture_url : nil
             json.profile_pic_clickable true
