@@ -25,6 +25,7 @@ Reech::Application.routes.draw do
       resources :solutions do
         post "preview_solution"
         post "purchase_solution"
+        post "solution_hi5"
       end
       resources :sessions
       resources :user_settings

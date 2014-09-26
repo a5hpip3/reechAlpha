@@ -42,6 +42,7 @@ json.solutions do
     json.no_profile_pic  false
     json.profile_pic_clickable false
     json.body solution.body
+    json.hi5_count solution.votes_for.size
     json.current_user_is_solver current_user_is_solver
     json.solution_owner_id solution.wrote_by.id
     json.solution_owner solution.wrote_by.full_name
