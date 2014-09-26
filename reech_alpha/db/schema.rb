@@ -11,11 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-<<<<<<< HEAD
-ActiveRecord::Schema.define(:version => 20140926110812) do
-=======
 ActiveRecord::Schema.define(:version => 20140926125416) do
->>>>>>> Chat. (Phase -I)
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
