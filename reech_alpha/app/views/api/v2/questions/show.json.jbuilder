@@ -10,6 +10,7 @@ current_user_friend_with_question_owner = Friendship::are_friends(current_user.r
 json.question do
   #json.extract! question, *question.attributes.keys
   json.id question.id
+  json.question_id question.question_id
   json.post question.post
   json.is_stared  question.is_stared?
   json.owner_location  question_owner.user_profile.location
@@ -46,7 +47,7 @@ json.solutions do
     json.current_user_is_solver current_user_is_solver
     json.solution_owner_id solution.wrote_by.id
     json.solution_owner solution.wrote_by.full_name
-    json.solution_owner_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.  wrote_by.user_profile.thumb_picture_url : nil    
+    json.solution_owner_image solution.wrote_by.user_profile.picture_file_name != nil ? solution.  wrote_by.user_profile.thumb_picture_url : nil
     json.previewed solution.preview_solutions.exists?(user_id: current_user.id)
     if solution_is_purchased || current_user_is_solver
       json.solution_provider_id solution.wrote_by.id

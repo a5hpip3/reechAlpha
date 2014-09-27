@@ -292,9 +292,9 @@ ActiveRecord::Schema.define(:version => 20140926125416) do
   end
 
   create_table "reech_chats", :force => true do |t|
-    t.integer  "from_user_id"
-    t.integer  "to_user_id"
-    t.integer  "solution_id"
+    t.string   "from_user_id"
+    t.string   "to_user_id"
+    t.string   "solution_id"
     t.text     "message"
     t.datetime "created_at",   :null => false
     t.datetime "updated_at",   :null => false

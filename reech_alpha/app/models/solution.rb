@@ -54,7 +54,7 @@ class Solution < ActiveRecord::Base
 	end
 
 	def notify_users
-		NotifyUsersWorker.perform_async(self.id)
+		#NotifyUsersWorker.perform_async(self.id)
 	end
 
 end
