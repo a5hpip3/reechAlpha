@@ -1,7 +1,7 @@
 module Api
 	module V2
 		class ApiUsersController < BaseController
-			before_filter :require_current_user, only: [:friends, :leader_board, :profile]
+			before_filter :require_current_user, only: [:friends, :leader_board, :profile, :current_user_profile]
 			before_filter :set_params, only: [:update]
 			@model_class = User
 
@@ -11,7 +11,13 @@ module Api
 			end
 
 			def profile
+				# Use this for fetching other user's profile
 				@user = User.find(params["id"])
+				render "index.json.jbuilder"
+			end
+
+			def current_user_profile
+				@user = current_user
 				render "index.json.jbuilder"
 			end
 
