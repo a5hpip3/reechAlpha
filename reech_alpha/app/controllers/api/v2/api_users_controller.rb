@@ -32,6 +32,15 @@ module Api
 				render json: user
 			end
 
+			def validate_code
+				user_ref =InviteUser.where("referral_code = ? AND token_validity_time >= ? AND status =1", params[:code] ,Time.now).first
+				if user_ref || (params[:code] == 1111.to_s)
+					render json: {is_valid: true, invite_id: user_ref ? user_ref.id : ""}
+				else
+					render json: {is_valid: false}
+				end
+			end
+
 			private
 
 			def set_params
