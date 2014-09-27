@@ -7,7 +7,7 @@ class NotifyUsersWorker
     entry = Solution.find(entry_id)
     current_user = entry.wrote_by
     # send push notification to user who posted this question
-    qust_details = entry.forquestion
+    qust_details = entry.question
     if !qust_details.nil?
     	question_owner = qust_details.user
     	linked_question = qust_details.linked_questions.find_by_user_id(current_user.reecher_id)
