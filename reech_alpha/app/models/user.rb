@@ -248,8 +248,8 @@ class User < ActiveRecord::Base
 			user_ref = InviteUser.where("id = ? AND token_validity_time >= ? AND status =1", self.invite_id ,Time.now).first
 			linked_question = LinkedQuestion.find(user_ref.linked_question_id)
 			user = linked_question.linked_by
-			self.friends << user
-			user.friends << self
+			self.friendships.create(friend_reecher_id: user.reecher_id, status: 'accepted')
+			user.friendships.create(friend_reecher_id: self.reecher_id, status: 'accepted')
 			user_ref.update_attributes(status: false)
 			linked_question.update_attributes(user_id: self.reecher_id)
 		end
