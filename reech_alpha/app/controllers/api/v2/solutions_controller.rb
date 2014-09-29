@@ -22,8 +22,9 @@ module Api
       end
       def solution_hi5
         solution = Solution.find(params[:solution_id])
-        solution.liked_by(current_user)
-        render status: 200, json: {hi5_count: solution.votes_for.size}
+        solution.liked_by(current_user)        
+        solution.disliked_by(current_user) unless solution.vote_registered?
+        render status: 200, json: {hi5_count: solution.count_votes_up}
       end
      private
 

@@ -17,8 +17,18 @@ module Api
       end
 
       def star_question
-        current_user.starred_questions << Question.find(params[:question_id]) unless Question.find(params[:question_id]).nil?
-        render status: 201, json: "success"
+        question = Question.find(params[:question_id])
+        unless question.nil?
+          unless  current_user.starred_questions.exists? question
+            current_user.starred_questions <<  question 
+            stared = true
+          else
+            current_user.starred_questions.delete question
+            stared = false
+          end
+          render status: 201, json: {stared: stared}
+        end        
+        render status: 404, json: "Question not found!"
       end
     	private
       def set_create_params
