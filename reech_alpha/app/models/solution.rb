@@ -19,6 +19,13 @@ class Solution < ActiveRecord::Base
 
 	has_many :reech_chats
 
+	has_many :chat_members,
+						through: :reech_chats,
+						source: :from_user,
+						group: :from_user_id,
+						conditions: proc {"from_user_id != #{self.wrote_by.id}"}
+						
+
 	validates_attachment :picture, :content_type => { :content_type => "image/jpeg" } , unless: Proc.new { |record| record[:picture].nil? }
 	after_create :notify_users
 

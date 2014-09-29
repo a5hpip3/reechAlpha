@@ -16,7 +16,7 @@ class User < ActiveRecord::Base
 	#include BCrypt
 	include Scrubber
 
-	has_many :reech_chats, primary_key: "id", foreign_key: "id"
+	has_many :reech_chats, primary_key: "id", foreign_key: "from_user_id"
 
 	#For OmniAuth
 	has_many :authorizations, :dependent => :destroy
@@ -220,11 +220,7 @@ class User < ActiveRecord::Base
   	end
   end
 
-  def chats(sol)
-  	reech_chats.where(solution_id: sol)
-  end
-
-	## Omniauth facebook registration
+  	## Omniauth facebook registration
 	def self.find_for_facebook_oauth(auth)
     where(email: auth.info.email).first_or_create do |user|
         user.provider = auth.provider

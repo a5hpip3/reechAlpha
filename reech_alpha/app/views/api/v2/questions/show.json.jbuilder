@@ -86,6 +86,11 @@ json.solutions do
         json.profile_pic_clickable false
       end
     end
+    if current_user_is_solver
+      json.chat_members solution.chat_members do |member|
+        json.(member, :id, :first_name, :last_name)
+      end
+    end
   end
 end
 json.current_user_starred_question Voting.where(user_id: current_user.id, question_id: question.id).exists?
