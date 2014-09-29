@@ -7,7 +7,8 @@ class User < ActiveRecord::Base
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
-	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes
+	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes, :invite_code, :invite_id
+	attr_accessor :invite_code, :invite_id
 	has_merit
 	acts_as_voter
 	serialize :scores, Hash
@@ -101,9 +102,9 @@ class User < ActiveRecord::Base
 	alias_attribute :reecher_profile,:user_profile
 
 	accepts_nested_attributes_for :user_profile
-
+  validate :check_invite_id
 	before_create :create_reecher_profile
-	after_create :assign_points
+	after_create :assign_points, :set_friendships
 
 	def self.create_from_omniauth_data(omniauth_data)
 		user = User.new(
@@ -233,6 +234,26 @@ class User < ActiveRecord::Base
         user.first_name = auth.info.name   # assuming the user model has a name
     end
   end
+
+	def check_invite_id
+		check_invite = self.invite_code
+		if check_invite
+			check_invite = self.invite_id.blank? ? true : InviteUser.where("id = ? AND token_validity_time >= ? AND status =1", self.invite_id ,Time.now).first
+		end
+		errors.add(:invite_id, "Invalid invite id.") if !check_invite
+	end
+
+	def set_friendships
+		if !self.invite_id.blank?
+			user_ref = InviteUser.where("id = ? AND token_validity_time >= ? AND status =1", self.invite_id ,Time.now).first
+			linked_question = LinkedQuestion.find(user_ref.linked_question_id)
+			user = linked_question.linked_by
+			self.friends << user
+			user.friends << self
+			user_ref.update_attributes(status: false)
+			linked_question.update_attributes(user_id: self.reecher_id)
+		end
+	end
 
 
 end

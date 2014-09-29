@@ -26,6 +26,8 @@ module Api
 			end
       # Auth for facebook.
 			def auth_face_book
+				graph = Koala::Facebook::API.new(params[:access_token])
+        logger.info "Facebook credential -----------------------#{graph.inspect}"
 				user = User.where(email: params[:email]).first_or_create do |user|
 						user.provider = "facebook"
 						user.uid = params[:uid]
