@@ -7,8 +7,8 @@ class User < ActiveRecord::Base
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
-	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes, :invite_code, :invite_id
-	attr_accessor :invite_code, :invite_id
+	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes, :invite_code, :invite_id, :picture
+	attr_accessor :invite_code, :invite_id, :picture
 	has_merit
 	acts_as_voter
 	serialize :scores, Hash
@@ -104,7 +104,15 @@ class User < ActiveRecord::Base
 	accepts_nested_attributes_for :user_profile
   validate :check_invite_id
 	before_create :create_reecher_profile
-	after_create :assign_points, :set_friendships
+	after_create :assign_points, :set_friendships, :set_user_picture
+
+
+    def set_user_picture
+      unless picture.nil?
+        self.user_profile.picture = picture
+      end        
+    end
+	
 
 	def self.create_from_omniauth_data(omniauth_data)
 		user = User.new(
