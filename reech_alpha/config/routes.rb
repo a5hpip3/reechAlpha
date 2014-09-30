@@ -20,6 +20,7 @@ Reech::Application.routes.draw do
       end
       resources :questions do
         post "star_question"
+        post "link_question_to_expert"
       end
       post "post_question_with_image" => "questions#create"
       resources :solutions do

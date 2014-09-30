@@ -59,7 +59,7 @@ class NotifyUsersWorker
       			checkFiendWithStarredUser = Friendship::are_friends(starred_user.reecher_id, entry.solver_id)
       			if checkFiendWithStarredUser
       				response_string = "STARSOLS, Your Friend < #{entry.solver }>, #{entry.question_id.to_s}, #{Time.now().to_s}"
-      				push_title = entry.solver+PUSH_TITLE_STARSOLS
+      				push_title = "#{entry.solver}"+PUSH_TITLE_STARSOLS
       			else
       				response_string = "STARSOLS, Your Friend #{entry.question_id.to_s} #{Time.now().to_s}"
       				push_title = "Friend"+ PUSH_TITLE_STARSOLS

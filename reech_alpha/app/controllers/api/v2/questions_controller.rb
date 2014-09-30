@@ -30,6 +30,16 @@ module Api
         end        
         render status: 404, json: "Question not found!"
       end
+      def link_question_to_expert
+        question = Question.find(params[:question_id])        
+        unless question.blank? && params[:audien_details].nil?
+          QuestionsWorker.perform_async(action_name, params[:audien_details], current_user.id, question.id, PUSH_TITLE_LINKED, "LINKED", "LINKED")            
+          render :status => 200, json: {:message => "success"}
+        else
+          render :status => 404, json: {:message => "false"}
+        end        
+        
+      end
     	private
       def set_create_params
             if params.has_key?(:file)
