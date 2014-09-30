@@ -333,7 +333,7 @@ module ApplicationHelper
               UserMailer.email_linked_to_question(phone_user.email, user, question).deliver  unless phone_user.email.blank?
             end
           end
-          device_details = Device.find_by_reecher_id(reecher_id: phone_user.reecher_id)
+          device_details = Device.find_by_reecher_id(phone_user.reecher_id)
           unless device_details.blank?
             if question != 0
               notify_string = "#{push_contant_str}," + "<" + user.full_name + ">" + ","+ question.question_id + "," + Time.now().to_s 
@@ -381,11 +381,9 @@ module ApplicationHelper
        
   def send_posted_question_notification_to_chosen_emails audien_details ,user,question,push_title_msg,push_contant_str,linked_quest_type
     if(!audien_details.blank? && audien_details.has_key?("emails") && !audien_details["emails"].nil?)
-      audien_reecher_ids = []
       audien_details["emails"].each do |email|
         email_user = User.find_by_email(email)
         if(email_user.present? && make_friendship_standard(email_user.reecher_id, user.reecher_id) )
-          audien_reecher_ids << email_user.reecher_id
           if linked_quest_type == "ASK"
             PostQuestionToFriend.create(:user_id =>user.reecher_id ,:friend_reecher_id =>email_user.reecher_id, :question_id=>question.question_id)
           elsif(linked_quest_type == "LINKED" && !email_user.linked_with_question?(question.question_id, user.reecher_id))
@@ -394,7 +392,7 @@ module ApplicationHelper
               UserMailer.email_linked_to_question(email_user.email, user, question).deliver  unless email_user.email.blank?
             end
           end
-          device_details = Device.find_by_reecher_id(reecher_id: email_user.reecher_id)
+          device_details = Device.find_by_reecher_id(email_user.reecher_id)
           unless device_details.blank?
             if question != 0
               notify_string = "#{push_contant_str}," + "<" + user.full_name + ">" + ","+ question.question_id + "," + Time.now().to_s 
@@ -428,7 +426,6 @@ module ApplicationHelper
           end
         end
       end
-      question.audien_user_ids = audien_reecher_ids if audien_reecher_ids.size > 0
     end
   end
  

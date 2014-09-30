@@ -49,6 +49,11 @@ module Api
 				end
 			end
 
+			def send_reech_request
+				ApiUsersWorker.perform_async(params[:audien_details], current_user.id, 0,PUSH_TITLE_INVITE,"INVITE","INVITE")
+				render json: {:status => 200, :message => "success"}
+			end
+
 			private
 
 			def set_params
