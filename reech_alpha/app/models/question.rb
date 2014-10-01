@@ -82,9 +82,9 @@ class Question < ActiveRecord::Base
 
   # New scopes
 
-  scope :starred, ->(user) {includes(:votings).where("votings.user_id = #{user.id}")}
-  scope :linked, ->(user) {includes(:linked_questions).where("linked_questions.user_id = '#{user.reecher_id}'")}
-  scope :created_by, ->(user) {where("posted_by_uid = '#{user.reecher_id}'")}
+  scope :starred, ->(user) {includes(:votings).where("votings.user_id = #{user.id}").order("questions.created_at DESC")}
+  scope :linked, ->(user) {includes(:linked_questions).where("linked_questions.user_id = '#{user.reecher_id}'").order("questions.created_at DESC")}
+  scope :created_by, ->(user) {where("posted_by_uid = '#{user.reecher_id}'").order("created_at DESC")}
   scope :posted_to, ->(user) {includes(:post_question_to_friends).where("post_question_to_friends.friend_reecher_id='#{user.reecher_id}'")}
   scope :all_feed, -> (user) do
     #pquestions = user.purchased_questions.collect(&:id)
@@ -95,7 +95,7 @@ class Question < ActiveRecord::Base
     linked_questions.user_id = ? OR
     post_question_to_friends.friend_reecher_id= ? OR
     questions.posted_by_uid IN (?)",
-    user.id, user.reecher_id, user.id, user.reecher_id, user.reecher_id, friends)
+    user.id, user.reecher_id, user.id, user.reecher_id, user.reecher_id, friends).order("questions.created_at DESC")
   end
 
   scope :mine, -> (user) do
