@@ -12,8 +12,8 @@ Reech::Application.routes.draw do
       resources :categories
       resources :api_users, only: [:index, :update] do
         collection do
-          get 'friends', 'leader_board', 'auth_face_book', :validate_code, :current_user_profile
-          post 'send_reech_request'
+          get 'friends', 'leader_board', :validate_code, :current_user_profile
+          post 'send_reech_request', 'auth_face_book'
         end
         member do
           get 'profile'

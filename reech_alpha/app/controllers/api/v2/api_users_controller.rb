@@ -36,6 +36,7 @@ module Api
 						user.first_name = credentials["first_name"]
 						user.last_name = credentials["last_name"]
 				end
+				user.set_device(params[:device]) if user
 				# Pending update profile and make connections.
 				render json: user
 			end

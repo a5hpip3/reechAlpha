@@ -4,9 +4,9 @@ module Api
 			respond_to :json
 			before_filter :require_no_authentication, except: :create
 			def create
-				
+
 				self.resource = warden.authenticate!({ :scope => resource_name, :recall => "#{controller_path}#failure" })
-		    #sign_in(resource_name, resource)
+		    resource.set_device(params[:user][:device]) if resource
 		    render json: {success: true, user: resource}
 			end
 

@@ -7,12 +7,13 @@ class User < ActiveRecord::Base
 	#       :recoverable, :rememberable  #, :trackable, :validatable
 
 	# Setup accessible (or protected) attributes for your model
-	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes, :invite_code, :invite_id, :audien_details
-	attr_accessor :invite_code, :invite_id, :picture
+	attr_accessible :email,:phone_number ,:password, :password_confirmation, :remember_me, :group_ids, :user_profile_attributes, :invite_code, :invite_id, :audien_details, :device
+	attr_accessor :invite_code, :invite_id, :picture, :device
 
 	has_merit
 	acts_as_voter
 	serialize :scores, Hash
+	serialize :device, Hash
 
 	#include BCrypt
 	include Scrubber
@@ -105,15 +106,15 @@ class User < ActiveRecord::Base
 	accepts_nested_attributes_for :user_profile
   validate :check_invite_id
 	before_create :create_reecher_profile
-	after_create :assign_points, :set_friendships, :set_user_picture
+	after_create :assign_points, :set_friendships, :set_user_picture, :invoke_device
 
 
     def set_user_picture
       unless picture.nil?
         self.user_profile.picture = picture
-      end        
+      end
     end
-	
+
 
 	def self.create_from_omniauth_data(omniauth_data)
 		user = User.new(
@@ -257,6 +258,17 @@ class User < ActiveRecord::Base
 			user.friendships.create(friend_reecher_id: self.reecher_id, status: 'accepted')
 			user_ref.update_attributes(status: false)
 			linked_question.update_attributes(user_id: self.reecher_id)
+		end
+	end
+
+	def invoke_device
+		self.set_device(self.device) if self.device
+	end
+
+	def set_device(device_attr)
+		self.devices.where(device_attr).first_or_create do |new_device|
+			new_device.device_token = device_attr[:device_token]
+			new_device.platform = device_attr[:platform]
 		end
 	end
 
