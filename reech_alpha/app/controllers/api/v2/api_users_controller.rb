@@ -27,14 +27,14 @@ module Api
       # Auth for facebook.
 			def auth_face_book
 				graph = Koala::Facebook::API.new(params[:access_token])
-        logger.info "Facebook credential -----------------------#{graph.inspect}"
-				user = User.where(email: params[:email]).first_or_create do |user|
+        credentials = graph.get_object("me")
+				user = User.where(email: credentials["email"]).first_or_create do |user|
 						user.provider = "facebook"
-						user.uid = params[:uid]
-						user.email = params[:email]
+						user.uid = credentials["id"]
+						user.email = credentials["email"]
 						user.password = ::Devise.friendly_token[0,20]
-						user.first_name = params[:first_name]
-						user.last_name = params[:last_name]
+						user.first_name = credentials["first_name"]
+						user.last_name = credentials["last_name"]
 				end
 				# Pending update profile and make connections.
 				render json: user
