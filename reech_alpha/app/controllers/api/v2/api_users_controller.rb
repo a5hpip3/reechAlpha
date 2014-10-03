@@ -33,9 +33,13 @@ module Api
 						user.uid = credentials["id"]
 						user.email = credentials["email"]
 						user.password = ::Devise.friendly_token[0,20]
+						user.password_confirmation = user.password
 						user.first_name = credentials["first_name"]
 						user.last_name = credentials["last_name"]
+						user.invite_id = params[:invite_id]
+						user.invite_code = params[:invite_code]
 				end
+				logger.info "Error-------#{user.errors.inspect}"
 				user.set_device(params[:device]) if user
 				# Pending update profile and make connections.
 				render json: user

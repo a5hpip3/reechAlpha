@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
 	before_create :create_unique_profile_id
 	before_create :create_reecher_id
 	validates :email, uniqueness: true ,:allow_blank => true, :allow_nil => true
-	validates :phone_number, uniqueness: true ,:allow_blank => true, :allow_nil => true
+	#validates :phone_number, uniqueness: true ,:allow_blank => true, :allow_nil => true
 	#Authentications
 
 	# friendships
