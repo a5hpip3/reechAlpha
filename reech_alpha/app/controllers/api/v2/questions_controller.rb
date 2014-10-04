@@ -20,36 +20,32 @@ module Api
         question = Question.find(params[:question_id])
         unless question.nil?
           unless  current_user.starred_questions.exists? question
-            current_user.starred_questions <<  question 
+            current_user.starred_questions <<  question
             stared = true
           else
             current_user.starred_questions.delete question
             stared = false
           end
           render status: 201, json: {stared: stared}
-        end        
+        end
         render status: 404, json: "Question not found!"
       end
       def link_question_to_expert
-        question = Question.find(params[:question_id])        
+        question = Question.find(params[:question_id])
         unless question.blank? && params[:audien_details].nil?
-          QuestionsWorker.perform_async(action_name, params[:audien_details], current_user.id, question.id, PUSH_TITLE_LINKED, "LINKED", "LINKED")            
+          QuestionsWorker.perform_async(action_name, params[:audien_details], current_user.id, question.id, PUSH_TITLE_LINKED, "LINKED", "LINKED")
           render :status => 200, json: {:message => "success"}
         else
           render :status => 404, json: {:message => "false"}
-        end        
-        
+        end
+
       end
     	private
       def set_create_params
-            if params.has_key?(:file)
-                params[:question] = JSON.parse(params[:question])
-                params[:question][:avatar] = params[:file]
-            end
-            if params[:question][:audien_details].blank? || (params[:question][:audien_details][:reecher_ids].blank? && params[:question][:audien_details][:emails].blank? && params[:question][:audien_details][:phone_numbers].blank? && params[:question][:audien_details][:groups].blank?)
-                params[:question][:is_public] = true
-            end
-
+        if params.has_key?(:file)
+            params[:question] = JSON.parse(params[:question])
+            params[:question][:avatar] = params[:file]
+        end
     	end
 
       def send_notifications
