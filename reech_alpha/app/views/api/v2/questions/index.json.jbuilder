@@ -7,7 +7,8 @@ json.array! questions do |row|
 	linked_count = row.linked_questions.find_all_by_linked_by_uid(current_user.id).count
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id
-	unless row.is_public || current_user == row.user
+
+	if (current_user != row.user) && !(row.post_question_to_friends.empty?) && !(row.post_question_to_friends.include? (current_user))
 		linker = current_user.linked_questions.find_by_question_id(row.question_id)
 		if linker
 			linked_by = User.find_by_reecher_id(linker.linked_by_uid)
@@ -19,6 +20,7 @@ json.array! questions do |row|
 			posted_by_avatar = nil
 		end
 	end
+
 	json.id row.id
 	json.post row.post
 	json.posted_by row.posted_by

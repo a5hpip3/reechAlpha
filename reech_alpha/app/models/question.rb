@@ -94,8 +94,8 @@ class Question < ActiveRecord::Base
     votings.user_id = ? OR
     linked_questions.user_id = ? OR
     post_question_to_friends.friend_reecher_id= ? OR
-    questions.posted_by_uid IN (?)",
-    user.id, user.reecher_id, user.id, user.reecher_id, user.reecher_id, friends).order("questions.created_at DESC")
+    (questions.is_public= ? AND questions.posted_by_uid IN (?))",
+    user.id, user.reecher_id, user.id, user.reecher_id, user.reecher_id, true, friends).order("questions.created_at DESC")
   end
 
   scope :mine, -> (user) do
