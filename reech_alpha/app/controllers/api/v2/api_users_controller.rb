@@ -64,12 +64,17 @@ module Api
 			private
 
 			def set_params
+				puts "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
 				if params.has_key?(:file)
 					params[:user] = JSON.parse(params[:user])
                 	params[:user][:picture] = params[:file]
 				end
 				params[:user][:user_profile_attributes] = {}
+				params[:user][:user_profile_attributes][:id] = params[:user][:profile_id]
 				params[:user][:user_profile_attributes][:location] = params[:user][:location]
+				params[:user].delete(:location)
+				params[:user].delete(:profile_id)
+				puts params
 			end
 
 		end

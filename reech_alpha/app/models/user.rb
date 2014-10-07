@@ -104,7 +104,7 @@ class User < ActiveRecord::Base
 	alias_attribute :reecher_profile,:user_profile
 
 	accepts_nested_attributes_for :user_profile
-  validate :check_invite_id
+  	validate :check_invite_id, on: :create
 	before_create :create_reecher_profile
 	after_create :assign_points, :set_friendships, :set_user_picture, :invoke_device
 
