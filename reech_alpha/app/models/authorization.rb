@@ -3,12 +3,20 @@ class Authorization < ActiveRecord::Base
   validates_presence_of :user_id, :uid, :provider
   validates_uniqueness_of :uid, :scope => :provider
 
-  def self.find_from_omniauth_data(hash)
-    find_by_provider_and_uid(hash['provider'], hash['uid'])
+  attr_accessor :access_token
+
+  after_create :set_friendships
+
+  def set_friendships
+    graph = Koala::Facebook::API.new(self.access_token)
+    friends = graph.get_connections("me", "friends")
+    friends = User.where(id: (Authorization.where(provider: "facebook", uid: friends)).collect(&:id))
+    friends.each do |friend|
+      unless user.friends.collect(&:id).include? friend.id
+        self.user.friendships.create(friend_reecher_id: friend.reecher_id, status: 'accepted')
+        friend.friendships.create(friend_reecher_id: self.user.reecher_id, status: 'accepted')
+      end
+    end
   end
 
-  def self.create_from_omniauth_data(hash, user = nil)
-    user ||= User.create_from_omniauth_data(hash)
-    Authorization.create(:user_id => user.id, :uid => hash['uid'], :provider => hash['provider'])
-  end
 end

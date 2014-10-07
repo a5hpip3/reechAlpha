@@ -29,8 +29,6 @@ module Api
 				graph = Koala::Facebook::API.new(params[:access_token])
         credentials = graph.get_object("me")
 				user = User.where(email: credentials["email"]).first_or_create do |user|
-						user.provider = "facebook"
-						user.uid = credentials["id"]
 						user.email = credentials["email"]
 						user.password = ::Devise.friendly_token[0,20]
 						user.password_confirmation = user.password
@@ -39,8 +37,12 @@ module Api
 						user.invite_id = params[:invite_id]
 						user.invite_code = params[:invite_code]
 				end
-				logger.info "Error-------#{user.errors.inspect}"
 				user.set_device(params[:device]) if user
+				user.authorizations.where(provider: "facebook").first_or_create do |auth|
+					auth.provider = "facebook"
+					auth.uid = credentials["id"]
+					auth.access_token = params[:access_token]
+				end
 				# Pending update profile and make connections.
 				render json: user
 			end
