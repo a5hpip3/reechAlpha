@@ -8,7 +8,7 @@ json.array! questions do |row|
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id
 
-	if (current_user != row.user) && !(row.post_question_to_friends.empty?) && !(row.post_question_to_friends.include? (current_user))
+	if (current_user != row.user) && !(row.post_question_to_friends.empty?) && !(row.post_question_to_friends.collect(&:friend_reecher_id).include? (current_user.reecher_id))
 		linker = current_user.linked_questions.find_by_question_id(row.question_id)
 		if linker
 			linked_by = User.find_by_reecher_id(linker.linked_by_uid)
