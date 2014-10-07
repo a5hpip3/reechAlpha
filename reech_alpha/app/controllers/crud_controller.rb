@@ -102,10 +102,10 @@ class CrudController < ListController
       set_failure_notice
       location = request.env['HTTP_REFERER'].presence
     end
-    location ||= index_url
+    #location ||= index_url
     respond_options = options.reverse_merge(success: destroyed,
                                             location: location)
-    respond_with(entry, respond_options, &block)
+    render json: entry
   end
 
   private
