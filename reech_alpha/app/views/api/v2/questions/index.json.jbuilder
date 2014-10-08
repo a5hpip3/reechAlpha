@@ -33,6 +33,7 @@ json.array! questions do |row|
 	json.updated_at row.updated_at
 	json.post row.post	
 	json.avatar_file_name row.avatar_file_name
+	json.updated_at row.updated_at
 	json.posted_by posted_by
 	json.posted_by_user_id user_id
 	json.has_solution row.solutions.count > 0 ? true : false

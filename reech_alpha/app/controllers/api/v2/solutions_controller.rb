@@ -19,6 +19,7 @@ module Api
           purchased_solution = PurchasedSolution.new(user_id: current_user.id, solution_id: params[:solution_id])
           if purchased_solution.save
             current_user.subtract_points(25)
+            make_friendship_standard(current_user.reecher_id, Solution.find(params[:solution_id]).solver_id)
             render status: 201, json: "success" 
           end          
         else
