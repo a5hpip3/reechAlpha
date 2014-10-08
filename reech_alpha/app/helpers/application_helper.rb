@@ -324,7 +324,6 @@ module ApplicationHelper
       audien_details["phone_numbers"].each do |number|
         phone_user = User.find_by_phone_number(number)
         if(phone_user.present? && make_friendship_standard(phone_user.reecher_id, user.reecher_id) )
-          audien_reecher_ids << phone_user.reecher_id
           if linked_quest_type == "ASK"
             PostQuestionToFriend.create(:user_id =>user.reecher_id ,:friend_reecher_id =>phone_user.reecher_id, :question_id=>question.question_id)
           elsif(linked_quest_type == "LINKED" && !phone_user.linked_with_question?(question.question_id, user.reecher_id))
