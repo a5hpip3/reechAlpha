@@ -8,12 +8,12 @@ json.array! questions do |row|
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id
 	clickable = true
-	all_linkers = []
+	all_links = current_user.linked_questions.find_all_by_question_id(row.id).collect(&:linked_by_uid)
+	all_linkers = User.where(reecher_id: all_links).collect(&:full_name)
 
 	if (current_user != row.user) && !(row.post_question_to_friends.empty?) && !(row.post_question_to_friends.collect(&:friend_reecher_id).include? (current_user.reecher_id))
-		linker = current_user.linked_questions.find_by_question_id(row.question_id)
-		all_links = current_user.linked_questions.find_all_by_question_id(row.question_id).collect(&:linked_by_uid)
-		all_linkers = User.where(reecher_id: all_links).collect(&:full_name)
+		linker = current_user.linked_questions.find_by_question_id(row.id)
+		
 		if linker
 			unless current_user.friends.include? row.user
 				linked_by = User.find_by_reecher_id(linker.linked_by_uid)

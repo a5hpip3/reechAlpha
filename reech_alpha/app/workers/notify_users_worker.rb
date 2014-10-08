@@ -5,7 +5,7 @@ class NotifyUsersWorker
   sidekiq_options retry: false
 	def perform(entry_id)
     entry = Solution.find(entry_id)
-    current_user = entry.wrote_by
+    current_user = entry.solver
     # send push notification to user who posted this question
     qust_details = entry.question
     if !qust_details.nil?
