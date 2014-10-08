@@ -13,13 +13,19 @@ module Api
         end
       end
       def purchase_solution
-        purchased_solution = PurchasedSolution.new(user_id: current_user.id, solution_id: params[:solution_id])
-        if purchased_solution.save
-          render status: 201, json: "success"
+        if PurchasedSolution.where(user_id: current_user.id, solution_id: params[:solution_id]).exists?
+          render status: 406, json: "Solution Purchased already!" 
+        elsif current_user.points > 24
+          purchased_solution = PurchasedSolution.new(user_id: current_user.id, solution_id: params[:solution_id])
+          if purchased_solution.save
+            current_user.subtract_points(25)
+            render status: 201, json: "success" 
+          end          
         else
-         render status: 406, json: "Solution Purchased already!" 
-        end   
+          render status: 406, json: "You Don't have enough curios!"
+        end        
       end
+
       def solution_hi5
         solution = Solution.find(params[:solution_id])
         solution.liked_by(current_user)        
