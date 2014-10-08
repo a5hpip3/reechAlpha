@@ -22,7 +22,7 @@ module Api
             render status: 201, json: "success" 
           end          
         else
-          render status: 406, json: "You Don't have enough curios!"
+          render status: 406, json: "You Don't have sufficient curios!"
         end        
       end
 

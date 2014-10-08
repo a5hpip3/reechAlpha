@@ -31,8 +31,7 @@ json.array! questions do |row|
 
 	json.id row.id
 	json.updated_at row.updated_at
-	json.post row.post
-	json.posted_by row.posted_by
+	json.post row.post	
 	json.avatar_file_name row.avatar_file_name
 	json.posted_by posted_by
 	json.posted_by_user_id user_id
