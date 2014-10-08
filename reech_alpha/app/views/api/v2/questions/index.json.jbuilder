@@ -8,15 +8,20 @@ json.array! questions do |row|
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id
 	clickable = true
+	all_linkers = []
 
 	if (current_user != row.user) && !(row.post_question_to_friends.empty?) && !(row.post_question_to_friends.collect(&:friend_reecher_id).include? (current_user.reecher_id))
 		linker = current_user.linked_questions.find_by_question_id(row.question_id)
+		all_links = current_user.linked_questions.find_all_by_question_id(row.question_id).collect(&:linked_by_uid)
+		all_linkers = User.where(reecher_id: all_links).collect(&:full_name)
 		if linker
-			linked_by = User.find_by_reecher_id(linker.linked_by_uid)
-			posted_by = linked_by.full_name
-			posted_by_avatar = linked_by.user_profile.profile_pic_path
-			linked = true
-			clickable = true
+			unless current_user.friends.include? row.user
+				linked_by = User.find_by_reecher_id(linker.linked_by_uid)
+				posted_by = "Friend of " + linked_by.full_name
+				posted_by_avatar = nil
+				linked = true
+				clickable = false
+			end
 		else
 			posted_by = "Friend"
 			posted_by_avatar = nil
@@ -25,6 +30,7 @@ json.array! questions do |row|
 	end
 
 	json.id row.id
+	json.updated_at row.updated_at
 	json.post row.post
 	json.posted_by row.posted_by
 	json.avatar_file_name row.avatar_file_name
@@ -37,5 +43,6 @@ json.array! questions do |row|
 	json.is_starred row.votings.find_by_user_id(current_user.id) ? true : false
 	json.clickable clickable
   json.linked_count linked_count
+	json.linkers all_linkers
 
 end
