@@ -150,7 +150,7 @@ class User < ActiveRecord::Base
 	end
 
 	def full_name
-		return "#{self.first_name} #{self.last_name}"
+		return "#{self.first_name} #{self.last_name.to_s.first}"
 	end
 
 	def location
