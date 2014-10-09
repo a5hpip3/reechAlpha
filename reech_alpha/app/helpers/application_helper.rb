@@ -326,8 +326,8 @@ module ApplicationHelper
         if(phone_user.present? && make_friendship_standard(phone_user.reecher_id, user.reecher_id) )
           if linked_quest_type == "ASK"
             PostQuestionToFriend.create(:user_id =>user.reecher_id ,:friend_reecher_id =>phone_user.reecher_id, :question_id=>question.question_id)
-          elsif(linked_quest_type == "LINKED" && !phone_user.linked_with_question?(question.question_id, user.reecher_id))
-            LinkedQuestion.create(user_id: phone_user.reecher_id, question_id: question.question_id, linked_by_uid: user.reecher_id, email_id: phone_user.email, phone_no: phone_user.phone_number, linked_type: linked_quest_type)
+          elsif(linked_quest_type == "LINKED" && !phone_user.linked_with_question?(question.id, user.reecher_id))
+            LinkedQuestion.create(user_id: phone_user.reecher_id, question_id: question.id, linked_by_uid: user.reecher_id, email_id: phone_user.email, phone_no: phone_user.phone_number, linked_type: linked_quest_type)
             if phone_user.has_email_notifications_enabled?("LINKED")
               UserMailer.email_linked_to_question(phone_user.email, user, question).deliver  unless phone_user.email.blank?
             end
@@ -385,8 +385,8 @@ module ApplicationHelper
         if(email_user.present? && make_friendship_standard(email_user.reecher_id, user.reecher_id) )
           if linked_quest_type == "ASK"
             PostQuestionToFriend.create(:user_id =>user.reecher_id ,:friend_reecher_id =>email_user.reecher_id, :question_id=>question.question_id)
-          elsif(linked_quest_type == "LINKED" && !email_user.linked_with_question?(question.question_id, user.reecher_id))
-            LinkedQuestion.create(user_id: email_user.reecher_id, question_id: question.question_id, linked_by_uid: user.reecher_id, email_id: email_user.email, phone_no: email_user.phone_number, linked_type: linked_quest_type)
+          elsif(linked_quest_type == "LINKED" && !email_user.linked_with_question?(question.id, user.reecher_id))
+            LinkedQuestion.create(user_id: email_user.reecher_id, question_id: question.id, linked_by_uid: user.reecher_id, email_id: email_user.email, phone_no: email_user.phone_number, linked_type: linked_quest_type)
             if email_user.has_email_notifications_enabled("LINKED")
               UserMailer.email_linked_to_question(email_user.email, user, question).deliver  unless email_user.email.blank?
             end

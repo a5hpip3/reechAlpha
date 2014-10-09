@@ -18,7 +18,7 @@ class Question < ActiveRecord::Base
   has_many :votings, :dependent => :destroy
   has_many :solutions, foreign_key: :question_id, primary_key: :question_id, :dependent => :destroy
   has_many :purchased_solutions, through: :solutions
-  has_many :linked_questions, :foreign_key => 'question_id', :primary_key => 'question_id'
+  has_many :linked_questions, :foreign_key => 'question_id', :primary_key => 'id'
 
   has_many :posted_solutions,
 	:class_name => 'Solution',
