@@ -65,6 +65,7 @@ json.solutions do
         if actual_solution.id == solution.id
       		json.id solution.id
         	json.solver solution.solver
+          json.solver_image solution.solver.image_url
         	json.solver_id solution.wrote_by.id    
         	json.image_url  solution.picture_file_name != nil ? solution.picture_url : nil
         	json.previewed  solution.preview_solutions.exists?(user_id: current_user.id) 
@@ -81,6 +82,7 @@ json.solutions do
               if  Friendship::are_friends(current_user.reecher_id, solution.solver_id) 
                 if !current_user_is_audien && (current_user.reecher_id != question.posted_by_uid)
                   json.solver "Friend"
+                  json.solver_image nil
                   json.image_url nil
                   json.profile_pic_clickable false
                 end
@@ -89,6 +91,7 @@ json.solutions do
           end
           if solution_type.to_s == "solutions_by_friends"
             json.solver "Friend"
+            json.solver_image nil
             json.image_url nil
             json.profile_pic_clickable false
           end
@@ -97,12 +100,14 @@ json.solutions do
             linker = linker.nil? ? [] : linker.linked_by
             linker = ([linker] + (current_user.friends & solution.wrote_by.friends))[0]
             if (current_user.reecher_id == question.posted_by_uid) || current_user_is_audien
-              json.solver_id linker.id  
+              json.solver_id linker.id 
+              json.solver_image linker.image_url 
               json.solver "Friend of #{linker.full_name}"
               json.image_url linker.image_url
               json.profile_pic_clickable true
             else
               json.solver "Friend of Friend"
+              json.solver_image nil
               json.image_url nil
               json.profile_pic_clickable false
             end
