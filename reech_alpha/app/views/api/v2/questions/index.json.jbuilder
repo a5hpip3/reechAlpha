@@ -34,7 +34,7 @@ json.array! questions do |row|
 	json.id row.id
 	json.updated_at row.updated_at
 	json.post row.post	
-	json.avatar_file_name row.avatar_url
+	json.avatar_file_name row.avatar_url.nil? ? nil : row.avatar_url
 	json.updated_at row.updated_at
 	json.posted_by posted_by
 	json.posted_by_avatar posted_by_avatar
