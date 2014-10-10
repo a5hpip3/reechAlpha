@@ -7,15 +7,22 @@ json.question do
   linked = linked_count > 0 ? true : false
   user_id = question.user.id
   clickable = true
+  can_link = true
+  all_links = current_user.linked_questions.find_all_by_question_id(question.id).collect(&:linked_by_uid)
+  all_linkers = User.where(reecher_id: all_links).collect(&:full_name)
 
   if (current_user != question.user) && !(question.post_question_to_friends.empty?) && !(question.post_question_to_friends.collect(&:friend_reecher_id).include? (current_user.reecher_id))
-    linker = current_user.linked_questions.find_by_question_id(question.question_id)
+    linker = current_user.linked_questions.find_by_question_id(question.id)
+    
     if linker
-      linked_by = User.find_by_reecher_id(linker.linked_by_uid)
-      posted_by = linked_by.full_name
-      posted_by_avatar = linked_by.user_profile.profile_pic_path
-      linked = true
-      clickable = true
+      unless current_user.friends.include? question.user
+        linked_by = User.find_by_reecher_id(linker.linked_by_uid)
+        posted_by = "Friend of " + linked_by.full_name
+        posted_by_avatar = nil
+        linked = true
+        can_link = false
+        clickable = false
+      end
     else
       posted_by = "Friend"
       posted_by_avatar = nil
@@ -24,20 +31,20 @@ json.question do
   end
 
   json.id question.id
-  json.question_id question.question_id
-  json.post question.post
-  json.posted_by question.posted_by
+  json.updated_at question.updated_at
+  json.post question.post  
   json.avatar_file_name question.avatar_file_name
-  json.updated_at json.updated_at
+  json.updated_at question.updated_at
   json.posted_by posted_by
   json.posted_by_user_id user_id
-  json.posted_by_avatar posted_by_avatar
   json.has_solution question.solutions.count > 0 ? true : false
   json.is_linked linked
   json.has_conversation false
   json.is_starred question.votings.find_by_user_id(current_user.id) ? true : false
   json.clickable clickable
-  json.linked_count linked_count 
+  json.linked_count linked_count
+  json.linkers all_linkers
+  json.can_link  can_link
 end
 
 

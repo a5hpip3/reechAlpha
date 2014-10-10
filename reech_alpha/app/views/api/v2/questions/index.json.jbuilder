@@ -8,6 +8,7 @@ json.array! questions do |row|
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id
 	clickable = true
+	can_link = true
 	all_links = current_user.linked_questions.find_all_by_question_id(row.id).collect(&:linked_by_uid)
 	all_linkers = User.where(reecher_id: all_links).collect(&:full_name)
 
@@ -20,6 +21,7 @@ json.array! questions do |row|
 				posted_by = "Friend of " + linked_by.full_name
 				posted_by_avatar = nil
 				linked = true
+				can_link = false
 				clickable = false
 			end
 		else
@@ -43,5 +45,5 @@ json.array! questions do |row|
 	json.clickable clickable
   json.linked_count linked_count
 	json.linkers all_linkers
-
+  json.can_link can_link
 end
