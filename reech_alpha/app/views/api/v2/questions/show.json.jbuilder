@@ -44,7 +44,7 @@ end
 solutions = question.solutions
 current_user_is_audien = question.post_question_to_friends.pluck(:friend_reecher_id).include?(current_user.reecher_id)
 purchased_solutions = question.solutions.where(id: question.purchased_solutions.where(user_id: current_user.id).collect(&:solution_id))
-solutions_by_audience = question.solutions.where(solver_id: question.post_question_to_friends.collect(&:friend_reecher_id)) - purchased_solutions
+solutions_by_audience = (current_user.reecher_id != question.posted_by_uid) ? [] :question.solutions.where(solver_id: question.post_question_to_friends.collect(&:friend_reecher_id)) - purchased_solutions
 solutions_by_friends = question.solutions.where(solver_id: (current_user.friends.collect(&:reecher_id) - solutions_by_audience.collect(&:solver_id) - purchased_solutions.collect(&:solver_id)))
 own_solutions = solutions.where(solver_id: current_user.reecher_id)
 solutions_by_others = solutions - solutions_by_friends - solutions_by_audience - purchased_solutions - own_solutions
@@ -86,9 +86,9 @@ json.solutions do
           end
           if solution_type.to_s == "solutions_by_others"          
             linker = question.linked_questions.where(user_id: solution.solver_id).first
-            linker = linker.linked_by unless linker.nil?
+            linker = linker.nil? ? [] : linker.linked_by
             linker = ([linker] + (current_user.friends & solution.wrote_by.friends))[0]
-            if current_user.reecher_id == question.posted_by_uid
+            if (current_user.reecher_id == question.posted_by_uid) || current_user_is_audien
               json.solver_id linker.id  
               json.solver "Friend of #{linker.full_name}"
               json.image_url linker.image_url
