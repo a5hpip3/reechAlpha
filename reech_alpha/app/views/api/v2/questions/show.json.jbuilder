@@ -37,6 +37,7 @@ json.question do
   json.avatar_file_name question.avatar_file_name != nil ? question.avatar_url : nil
   json.updated_at question.updated_at
   json.posted_by posted_by
+  json.posted_by_avatar posted_by_avatar
   json.posted_by_user_id user_id
   json.has_solution question.solutions.count > 0 ? true : false
   json.is_linked linked
