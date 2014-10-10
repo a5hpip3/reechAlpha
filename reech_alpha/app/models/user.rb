@@ -136,7 +136,7 @@ class User < ActiveRecord::Base
   end
 
   def image_url
-  	user_profile.image_url
+  	user_profile.picture_file_name != nil ? user_profile.thumb_picture_url : nil
   end
   def reecherId
   	reecher_id

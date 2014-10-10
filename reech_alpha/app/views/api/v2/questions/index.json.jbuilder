@@ -3,7 +3,7 @@ questions = questions.where(category_id: params[:category_id]) if !params[:categ
 
 json.array! questions do |row|
 	posted_by = row.user.full_name
-	posted_by_avatar = row.user.user_profile.profile_pic_path
+	posted_by_avatar = row.user.image_url
 	linked_count = row.linked_questions.find_all_by_linked_by_uid(current_user.reecher_id).count
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id

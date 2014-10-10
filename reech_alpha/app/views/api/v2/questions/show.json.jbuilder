@@ -2,7 +2,7 @@ question = Question.find(params[:id])
 
 json.question do 
   posted_by = question.user.full_name
-  posted_by_avatar = question.user.user_profile.profile_pic_path
+  posted_by_avatar = question.user.image_url
   linked_count = question.linked_questions.find_all_by_linked_by_uid(current_user.reecher_id).count
   linked = linked_count > 0 ? true : false
   user_id = question.user.id
@@ -15,14 +15,12 @@ json.question do
     linker = current_user.linked_questions.find_by_question_id(question.id)
     
     if linker
-      unless current_user.friends.include? question.user
-        linked_by = User.find_by_reecher_id(linker.linked_by_uid)
-        posted_by = "Friend of " + linked_by.full_name
-        posted_by_avatar = nil
-        linked = true
-        can_link = false
-        clickable = false
-      end
+      linked_by = User.find_by_reecher_id(linker.linked_by_uid)
+      posted_by = linked_by.full_name
+      posted_by_avatar = linked_by.image_url
+      linked = true
+      can_link = false
+      clickable = true
     else
       posted_by = "Friend"
       posted_by_avatar = nil
@@ -32,10 +30,10 @@ json.question do
 
   json.id question.id
   json.question_id question.question_id
-  json.updated_at question.updated_at
-  json.post question.post  
-  json.avatar_file_name question.avatar_file_name
-  json.updated_at question.updated_at
+  json.post question.post
+  json.posted_by question.posted_by
+  json.avatar_file_name question.avatar_file_name != nil ? question.avatar_url : nil
+  json.updated_at json.updated_at
   json.posted_by posted_by
   json.posted_by_user_id user_id
   json.has_solution question.solutions.count > 0 ? true : false

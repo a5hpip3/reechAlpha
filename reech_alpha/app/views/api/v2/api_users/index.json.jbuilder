@@ -1,6 +1,6 @@
 json.questions_count @user.questions.count 
 json.answered_solutions_count @user.answered_solutions.count
-json.image_url @user.user_profile.image_url
+json.image_url @user.image_url
 json.curio_points  @user.points
 json.high_fives @user.user_profile.votes_for.count
 json.location @user.user_profile.location

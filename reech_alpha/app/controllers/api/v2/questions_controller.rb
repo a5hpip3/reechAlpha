@@ -46,7 +46,7 @@ module Api
             params[:question] = JSON.parse(params[:question])
             params[:question][:avatar] = params[:file]
         end
-    	end
+      end
 
       def send_notifications
           if !params[:question][:audien_details].nil?
