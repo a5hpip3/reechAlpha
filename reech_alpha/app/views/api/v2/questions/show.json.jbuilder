@@ -31,6 +31,7 @@ json.question do
   end
 
   json.id question.id
+  json.question_id question.question_id
   json.updated_at question.updated_at
   json.post question.post  
   json.avatar_file_name question.avatar_file_name
