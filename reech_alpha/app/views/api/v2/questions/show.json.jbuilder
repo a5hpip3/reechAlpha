@@ -15,12 +15,14 @@ json.question do
     linker = current_user.linked_questions.find_by_question_id(question.id)
     
     if linker
-      linked_by = User.find_by_reecher_id(linker.linked_by_uid)
-      posted_by = linked_by.full_name
-      posted_by_avatar = linked_by.image_url
-      linked = true
-      can_link = false
-      clickable = true
+      unless current_user.friends.include? question.user
+        linked_by = User.find_by_reecher_id(linker.linked_by_uid)
+        posted_by = "Friend of " + linked_by.full_name
+        posted_by_avatar = nil
+        linked = true
+        can_link = false
+        clickable = false
+      end
     else
       posted_by = "Friend"
       posted_by_avatar = nil
@@ -30,10 +32,10 @@ json.question do
 
   json.id question.id
   json.question_id question.question_id
-  json.post question.post
-  json.posted_by question.posted_by
+  json.updated_at question.updated_at
+  json.post question.post  
   json.avatar_file_name question.avatar_file_name != nil ? question.avatar_url : nil
-  json.updated_at json.updated_at
+  json.updated_at question.updated_at
   json.posted_by posted_by
   json.posted_by_user_id user_id
   json.has_solution question.solutions.count > 0 ? true : false
