@@ -66,9 +66,9 @@ json.solutions do
   	  current_solutions.each do |solution|
         if actual_solution.id == solution.id
       		json.id solution.id
-        	json.solver solution.solver
-          json.solver_image solution.solver.image_url
-        	json.solver_id solution.wrote_by.id
+        	json.solver solution.wrote_by.full_name
+          json.solver_image solution.wrote_by.image_url
+          json.solver_id solution.wrote_by.id
         	json.image_url  solution.picture_file_name != nil ? solution.picture_url : nil
         	json.previewed  solution.preview_solutions.exists?(user_id: current_user.id)
         	json.profile_pic_clickable true
