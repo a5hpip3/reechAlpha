@@ -14,15 +14,16 @@ json.array! questions do |row|
 
 	if (current_user != row.user) && !(row.post_question_to_friends.empty?) && !(row.post_question_to_friends.collect(&:friend_reecher_id).include? (current_user.reecher_id))
 		linker = current_user.linked_questions.find_by_question_id(row.id)
-		
+
 		if linker
 			unless current_user.friends.include? row.user
 				linked_by = User.find_by_reecher_id(linker.linked_by_uid)
 				posted_by = "Friend of " + linked_by.full_name
-				posted_by_avatar = nil
+				posted_by_avatar = linked_by.image_url
+				user_id = linked_by.id
 				linked = true
 				can_link = false
-				clickable = false
+				clickable = true
 			end
 		else
 			posted_by = "Friend"
@@ -33,7 +34,7 @@ json.array! questions do |row|
 
 	json.id row.id
 	json.updated_at row.updated_at
-	json.post row.post	
+	json.post row.post
 	json.avatar_file_name row.avatar_url
 	json.updated_at row.updated_at
 	json.posted_by posted_by
