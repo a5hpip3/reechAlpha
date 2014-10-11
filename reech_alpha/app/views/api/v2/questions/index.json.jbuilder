@@ -16,15 +16,15 @@ json.array! questions do |row|
 		linker = current_user.linked_questions.find_by_question_id(row.id)
 
 		if linker
-			unless current_user.friends.include? row.user
-				linked_by = User.find_by_reecher_id(linker.linked_by_uid)
-				posted_by = "Friend of " + linked_by.full_name
-				posted_by_avatar = linked_by.image_url
-				user_id = linked_by.id
-				linked = true
-				can_link = false
-				clickable = true
-			end
+
+			linked_by = User.find_by_reecher_id(linker.linked_by_uid)
+			posted_by = "Friend of " + linked_by.full_name
+			posted_by_avatar = linked_by.image_url
+			user_id = linked_by.id
+			linked = true
+			can_link = false
+			clickable = true
+
 		else
 			posted_by = "Friend"
 			posted_by_avatar = nil
