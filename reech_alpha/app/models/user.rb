@@ -262,13 +262,13 @@ class User < ActiveRecord::Base
 	end
 
 	def invoke_device
-		logger.info "$$$$$$$$$$$$$"
 		self.set_device(self.device) if self.device
 	end
 
 	def set_device(device_attr)
-		Device.where(device_attr).destroy_all
-		self.devices.create(device_attr)
+		Device.where("device_token = ? AND platform = ? AND reecher_id != ?", device_attr[:device_token], device_attr[:platform], self.reecher_id).destroy_all
+		Device.where("device_token != ? AND platform != ? AND reecher_id = ?", device_attr[:device_token], device_attr[:platform], self.reecher_id).destroy_all
+		self.devices.create(device_attr) if Device.where("device_token = ? AND platform = ? AND reecher_id = ?", device_attr[:device_token], device_attr[:platform], self.reecher_id).first.blank?
 	end
 
 
