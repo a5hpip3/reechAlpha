@@ -262,14 +262,13 @@ class User < ActiveRecord::Base
 	end
 
 	def invoke_device
+		logger.info "$$$$$$$$$$$$$"
 		self.set_device(self.device) if self.device
 	end
 
 	def set_device(device_attr)
-		self.devices.where(device_attr).first_or_create do |new_device|
-			new_device.device_token = device_attr[:device_token]
-			new_device.platform = device_attr[:platform]
-		end
+		Device.where(device_attr).destroy_all
+		self.devices.create(device_attr)
 	end
 
 
