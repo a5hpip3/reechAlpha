@@ -27,7 +27,7 @@ module Api
       # Auth for facebook.
 			def auth_face_book
 				graph = Koala::Facebook::API.new(params[:access_token])
-        credentials = graph.get_object("me")
+        		credentials = graph.get_object("me")
 				user = User.where(email: credentials["email"]).first_or_create do |user|
 						user.email = credentials["email"]
 						user.password = ::Devise.friendly_token[0,20]

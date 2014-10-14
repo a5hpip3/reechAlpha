@@ -136,7 +136,11 @@ class User < ActiveRecord::Base
   end
 
   def image_url
-  	user_profile.picture_file_name != nil ? user_profile.thumb_picture_url : nil
+  	if authorizations.empty?
+  		user_profile.picture_file_name != nil ? user_profile.thumb_picture_url : nil
+  	else
+  		'http://graph.facebook.com/#{authorizations.first.uid}/picture'
+  	end
   end
   def reecherId
   	reecher_id
