@@ -1,6 +1,6 @@
 questions = Question.send(params[:scope], current_user)
 questions = questions.where(category_id: params[:category_id]) if !params[:category_id].blank?
-questions = questions.page(params[:page] ? params[:page].to_i : 1 ).per_page(params[:per_page] ? params[:per_page].to_i : 3)
+questions = questions.page(params[:page] ? params[:page].to_i : 1 ).per_page(params[:per_page] ? params[:per_page].to_i : 4)
 json.array! questions do |row|
 	posted_by = row.user.full_name
 	posted_by_avatar = row.user.image_url	
