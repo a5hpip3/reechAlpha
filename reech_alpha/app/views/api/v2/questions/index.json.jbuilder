@@ -3,7 +3,9 @@ questions = questions.where(category_id: params[:category_id]) if !params[:categ
 
 json.array! questions do |row|
 	posted_by = row.user.full_name
-	posted_by_avatar = row.user.image_url
+	posted_by_avatar = row.user.image_url	
+	solution_purchased = row.purchased_solutions.where(user_id = current_user.id).exists?
+	has_conversation = ReechChat.includes('solution').where('solutions.question_id = ?', row.question_id).count > 0 ? true : false
 	linked_count = row.linked_questions.find_all_by_linked_by_uid(current_user.reecher_id).count
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id
@@ -40,9 +42,10 @@ json.array! questions do |row|
 	json.posted_by posted_by
 	json.posted_by_avatar posted_by_avatar
 	json.posted_by_user_id user_id
-	json.has_solution row.solutions.count > 0 ? true : false
+	json.solution_count row.solutions.count
+	json.solution_purchased  solution_purchased 
 	json.is_linked linked
-	json.has_conversation false
+	json.has_conversation has_conversation
 	json.is_starred row.votings.find_by_user_id(current_user.id) ? true : false
 	json.clickable clickable
   json.linked_count linked_count
