@@ -29,37 +29,9 @@ class Question < ActiveRecord::Base
   has_many :post_question_to_friends, primary_key: :question_id
   #default_scope { where(:published_at => Time.now - 1.week) }
   belongs_to :category
-  # Need to test
-  # scope :feed, ->(arg){where("posted_by_uid  IN (?) AND created_at >= ?" , arg.friends.pluck(:friend_reecher_id).push(arg.reecher_id) ,arg.created_at).order("created_at DESC")}
-
-  # scope :stared, ->(arg){where("id in (?)", arg.votings.pluck(:question_id)).order("created_at DESC")}
-
-  # scope :self, ->(arg) do
-  #   my_questions = arg.questions.order("created_at DESC").pluck("id")
-  #   my_all_questions = (PurchasedSolution.questions(arg) + my_questions).sort
-  #   where("id in (?)", my_all_questions).order("created_at DESC")
-  # end
-
-  # scope :get_questions, ->(type, current_user) do
-  #   questions_list = send(type, current_user)
-  # end
+  
   scope :find_by_category, ->(arg){ where(category_id: arg)}
   class << self
-    def feed(arg)
-      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid) AND solution_id IN (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q WHERE (posted_by_uid IN (SELECT friend_reecher_id FROM users INNER JOIN friendships ON users.reecher_id = friendships.friend_reecher_id WHERE friendships.reecher_id = \'#{arg.reecher_id}\' AND (status = 'accepted')) OR posted_by_uid = \'#{arg.reecher_id}\') AND q.created_at >= \'#{arg.created_at}\' ORDER BY created_at DESC"
-      ActiveRecord::Base.connection.execute(sql_str)
-    end
-
-    def stared(arg)
-      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.id IN(select v.question_id from votings v INNER JOIN questions ON v.question_id = questions.id WHERE questions.posted_by_uid = \'#{arg.reecher_id}\') ORDER BY q.created_at DESC"
-      ActiveRecord::Base.connection.execute(sql_str)
-    end
-
-    def self(arg)
-      sql_str = "select q.question_id as q_id, (select count(*) from purchased_solutions WHERE user_id = (select id from users where reecher_id=posted_by_uid)  AND solution_id   IN  (select id from solutions where question_id = q_id)) AS ops, (select CAST(GROUP_CONCAT(friend_reecher_id SEPARATOR ',') AS CHAR) from post_question_to_friends where question_id = q_id) as pqtfs from questions q where q.posted_by_uid = \'#{arg.reecher_id}\' OR q.id IN(select s.question_id from purchased_solutions p INNER JOIN solutions s ON p.solution_id = s.id WHERE p.user_id = #{arg.id}) ORDER BY q.created_at DESC"
-      ActiveRecord::Base.connection.execute(sql_str)
-    end
-
     def get_questions(type, current_user)
       questions_list = send(type, current_user)
     end
@@ -86,7 +58,7 @@ class Question < ActiveRecord::Base
   scope :linked, ->(user) {includes(:linked_questions).where("linked_questions.user_id = '#{user.reecher_id}'").order("questions.created_at DESC")}
   scope :created_by, ->(user) {where("posted_by_uid = '#{user.reecher_id}'").order("created_at DESC")}
   scope :posted_to, ->(user) {includes(:post_question_to_friends).where("post_question_to_friends.friend_reecher_id='#{user.reecher_id}'")}
-  scope :all_feed, -> (user) do
+  scope :all_feed, ->(user) do
     #pquestions = user.purchased_questions.collect(&:id)
     friends = user.friends.collect(&:reecher_id)
     includes(:purchased_solutions).includes(:votings).includes(:linked_questions).includes(:post_question_to_friends).
@@ -98,7 +70,7 @@ class Question < ActiveRecord::Base
     user.id, user.reecher_id, user.id, user.reecher_id, user.reecher_id, true, friends).order("questions.created_at DESC")
   end
 
-  scope :mine, -> (user) do
+  scope :mine, ->(user) do
     #pquestions = user.purchased_questions.collect(&:id)
     includes(:purchased_solutions).where("purchased_solutions.user_id = ? OR posted_by_uid = ?
     ", user.id, user.reecher_id)
