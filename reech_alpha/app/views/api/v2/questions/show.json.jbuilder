@@ -79,6 +79,11 @@ json.solutions do
           if solution_type.to_s == "purchased_solutions"
             json.purchased   true
           end
+          if solution_type.to_s == "own_solutions"
+            json.chat_members solution.chat_members do |member|
+              json.(member, :id, :first_name, :last_name)
+            end
+          end
           if solution_type.to_s == "solutions_by_audience"
             if solution.solver_id != current_user.reecher_id
               if  Friendship::are_friends(current_user.reecher_id, solution.solver_id)
