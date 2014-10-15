@@ -16,6 +16,7 @@ class Solution < ActiveRecord::Base
 	has_many :purchased_solutions
 	has_many :users, :through => :purchased_solutions
 	has_many :preview_solutions
+	has_many :votes, primary_key: :id, foreign_key: :votable_id
 
 	has_many :reech_chats
 
