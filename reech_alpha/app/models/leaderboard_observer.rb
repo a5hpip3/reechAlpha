@@ -2,7 +2,7 @@ class LeaderboardObserver < ActiveRecord::Observer
 	observe :question, :solution, :purchased_solution, :vote
 
 	def after_create(record)
-		user = record.user
+		user = record.class.model_name == "Solution" ? record.wrote_by : record.user
 		today_question_count = user.questions.where(:created_at => Time.now.beginning_of_day..Time.now.end_of_day).count
 		today_answer_count = user.answered_solutions.where(:created_at => Time.now.beginning_of_day..Time.now.end_of_day).count
 		today_hi5_count = user.user_profile.votes_for.where(:created_at => Time.now.beginning_of_day..Time.now.end_of_day).count
