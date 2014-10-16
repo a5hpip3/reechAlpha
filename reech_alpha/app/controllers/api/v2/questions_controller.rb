@@ -1,7 +1,7 @@
 module Api
   module V2
     class QuestionsController < BaseController
-    	before_filter :require_current_user
+    	before_filter :require_current_user, except: [:create]
     	before_filter :set_create_params, only: [:create]
       after_filter :send_notifications, only: [:create]
 
@@ -50,7 +50,7 @@ module Api
 
       def send_notifications
           if !params[:question][:audien_details].nil?
-              QuestionsWorker.perform_async(action_name, params[:question]["audien_details"], current_user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
+              QuestionsWorker.perform_async(action_name, params[:question]["audien_details"], entry.user.id, entry.id, PUSH_TITLE_ASKHELP, "ASKHELP", "ASK")
           end
       end
     end
