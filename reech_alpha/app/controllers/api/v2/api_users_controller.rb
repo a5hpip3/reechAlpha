@@ -61,6 +61,13 @@ module Api
 				render json: {:status => 200, :message => "success"}
 			end
 
+			def set_device
+				Device.where("device_token = ? AND platform = ? AND reecher_id != ?", params[:device_token], params[:platform], current_user.reecher_id).destroy_all
+				Device.where("device_token != ? AND platform = ? AND reecher_id = ?", params[:device_token], params[:platform], current_user.reecher_id).destroy_all
+				current_user.devices.create(device_token: params[:device_token], platform: params[:platform]) if Device.where("device_token = ? AND platform = ? AND reecher_id = ?", params[:device_token], params[:platform], current_user.reecher_id).first.blank?
+				render json: {status: 200, message: "success"}
+			end
+
 			private
 
 			def set_params

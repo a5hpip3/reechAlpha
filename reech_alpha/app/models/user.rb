@@ -107,7 +107,7 @@ class User < ActiveRecord::Base
 	accepts_nested_attributes_for :user_profile
   	validate :check_invite_id, on: :create
 	before_create :create_reecher_profile
-	after_create :assign_points, :set_friendships, :set_user_picture, :invoke_device
+	after_create :assign_points, :set_friendships, :set_user_picture
 
 
     def set_user_picture
@@ -265,16 +265,4 @@ class User < ActiveRecord::Base
 			linked_question.update_attributes(user_id: self.reecher_id)
 		end
 	end
-
-	def invoke_device
-		self.set_device(self.device) if self.device
-	end
-
-	def set_device(device_attr)
-		Device.where("device_token = ? AND platform = ? AND reecher_id != ?", device_attr[:device_token], device_attr[:platform], self.reecher_id).destroy_all
-		Device.where("device_token != ? AND platform = ? AND reecher_id = ?", device_attr[:device_token], device_attr[:platform], self.reecher_id).destroy_all
-		self.devices.create(device_attr) if Device.where("device_token = ? AND platform = ? AND reecher_id = ?", device_attr[:device_token], device_attr[:platform], self.reecher_id).first.blank?
-	end
-
-
 end

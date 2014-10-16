@@ -6,8 +6,8 @@ module Api
 			def create
 
 				self.resource = warden.authenticate!({ :scope => resource_name, :recall => "#{controller_path}#failure" })
-		    resource.set_device(params[:user][:device]) if resource
-		    render json: {success: true, user: resource}
+			    #resource.set_device(params[:user][:device]) if resource
+			    render json: {success: true, user: resource}
 			end
 
 			def failure

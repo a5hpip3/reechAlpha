@@ -10,10 +10,11 @@ module ApplicationHelper
       APNS.send_notifications([n1])    
     elsif platform =='Android'      
       require 'gcm'
-      gcm = GCM.new("AIzaSyA8LPahDEVgdPxCU4QrWOh1pF_IL655LNI")
+      gcm = GCM.new("AIzaSyC98sLFibOitkGdBjGPfQTWfLochak7v6E")
       registration_ids= [device_token] # an array of one or more client registration IDs
-      options = {data: {payload_body:message ,message: title ,title:"Reech"}, collapse_key: "Reech",time_to_live:3600}
+      options = {data: {payload_body:message ,message: title ,title:"Reech", msgcnt: '3'}, collapse_key: "Reech",time_to_live:3600}
       response = gcm.send_notification(registration_ids, options)      
+      puts response
     end
   end
 
@@ -335,9 +336,11 @@ module ApplicationHelper
           device_details = Device.find_by_reecher_id(phone_user.reecher_id)
           unless device_details.blank?
             if question != 0
-              notify_string = "#{push_contant_str}," + "<" + user.full_name + ">" + ","+ question.question_id + "," + Time.now().to_s 
+              notify_string = "#{user.full_name}" + push_title_msg
+              #notify_string = "#{push_contant_str}," + "<" + user.full_name + ">" + ","+ question.question_id + "," + Time.now().to_s 
             elsif question == 0
-              notify_string = "#{push_contant_str}," + "<"+  user.full_name + ">" + "," + Time.now().to_s
+              notify_string = push_title_msg
+              #notify_string = "#{push_contant_str}," + "<"+  user.full_name + ">" + "," + Time.now().to_s
             end
             if linked_quest_type != "LINKED"
               send_device_notification(device_details[:device_token].to_s, notify_string ,device_details[:platform].to_s,user.full_name+push_title_msg) if phone_user.has_device_notifications_enabled?(linked_quest_type)
@@ -394,9 +397,11 @@ module ApplicationHelper
           device_details = Device.find_by_reecher_id(email_user.reecher_id)
           unless device_details.blank?
             if question != 0
-              notify_string = "#{push_contant_str}," + "<" + user.full_name + ">" + ","+ question.question_id + "," + Time.now().to_s 
+              notify_string = "#{user.full_name}" + push_title_msg
+              #notify_string = "#{push_contant_str}," + "<" + user.full_name + ">" + ","+ question.question_id + "," + Time.now().to_s 
             elsif question == 0
-              notify_string = "#{push_contant_str}," + "<"+  user.full_name + ">" + "," + Time.now().to_s
+              notify_string = push_title_msg
+              #notify_string = "#{push_contant_str}," + "<"+  user.full_name + ">" + "," + Time.now().to_s
             end
             if linked_quest_type != "LINKED"
               send_device_notification(device_details[:device_token].to_s, notify_string ,device_details[:platform].to_s,user.full_name+push_title_msg) if email_user.has_device_notifications_enabled?(linked_quest_type)
