@@ -10,3 +10,4 @@ json.connections_count @user.friends.count
 json.phone_number @user.phone_number
 json.id @user.id
 json.profile_id @user.user_profile.id
+json.notification_count @user.notifications.where(read: false).count
