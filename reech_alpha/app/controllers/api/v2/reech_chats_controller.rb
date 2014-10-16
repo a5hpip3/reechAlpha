@@ -4,7 +4,7 @@ module Api
 			before_filter :require_current_user
 
 			def index
-				@chats = ReechChat.where("solution_id = ?", params[:solution_id]).where("from_user_id = ? OR to_user_id = ?", current_user.id, current_user.id).order('created_at').limit(20)
+				@chats = ReechChat.where("solution_id = ?", params[:solution_id]).where("from_user_id in (?) AND to_user_id in (?)", params[:member_ids], params[:member_ids]).order('created_at').limit(20)
 				render "index"
 			end
 

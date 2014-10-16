@@ -81,7 +81,7 @@ json.solutions do
           end
           if solution_type.to_s == "own_solutions"
             json.chat_members solution.chat_members do |member|
-              json.(member, :id, :first_name, :last_name)
+              json.(member, :id, :full_name)
             end
           end
           if solution_type.to_s == "solutions_by_audience"
