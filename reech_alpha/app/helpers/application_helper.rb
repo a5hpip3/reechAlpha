@@ -10,10 +10,14 @@ module ApplicationHelper
       APNS.send_notifications([n1])    
     elsif platform =='Android'      
       require 'gcm'
+      #for server
+      #gcm = GCM.new("AIzaSyA8LPahDEVgdPxCU4QrWOh1pF_IL655LNI")
+      #for testing  locally
       gcm = GCM.new("AIzaSyC98sLFibOitkGdBjGPfQTWfLochak7v6E")
       registration_ids= [device_token] # an array of one or more client registration IDs
-      options = {data: {payload_body:message ,message: title ,title:"Reech"}, collapse_key: "Reech",time_to_live:3600}
+      options = {data: {payload_body:message ,message: title ,title:"Reech", msgcnt: '3'}, collapse_key: "Reech",time_to_live:3600}
       response = gcm.send_notification(registration_ids, options)      
+      puts response
     end
   end
 

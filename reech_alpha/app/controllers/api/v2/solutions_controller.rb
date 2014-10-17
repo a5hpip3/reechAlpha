@@ -20,7 +20,8 @@ module Api
           if purchased_solution.save
             current_user.subtract_points(25)
             make_friendship_standard(current_user.reecher_id, Solution.find(params[:solution_id]).solver_id)
-            render status: 201, json: "success" 
+            Notification.create(from_user: current_user.reecher_id, to_user: purchased_solution.solution.wrote_by.reecher_id, message: "#{current_user.full_name}" + PUSH_TITLE_GRABSOLS, notification_type: "GRABSOL", record_id: purchased_solution.solution.question.id)
+            render status: 200, json: "success" 
           end          
         else
           render status: 406, json: "You Don't have sufficient curios!"
@@ -31,6 +32,7 @@ module Api
         solution = Solution.find(params[:solution_id])
         solution.liked_by(current_user)        
         solution.disliked_by(current_user) unless solution.vote_registered?
+        Notification.create(from_user: current_user.reecher_id, to_user: solution.wrote_by.reecher_id, message: "#{current_user.full_name}" + PUSH_TITLE_HGHFV, notification_type: "HI5", record_id: solution.question.id) if solution.vote_registered?
         render status: 200, json: {hi5_count: solution.count_votes_up}
       end
      private
