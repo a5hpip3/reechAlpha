@@ -1,7 +1,8 @@
 module Api
   module V2
     class SolutionsController < BaseController
-    	before_filter :require_current_user
+    	before_filter :require_current_user, except: [:create]
+      before_filter :set_create_params, only: [:create]
     	after_filter :send_notification, only: [:create]
 
     	def preview_solution
@@ -36,9 +37,15 @@ module Api
         render status: 200, json: {hi5_count: solution.count_votes_up}
       end
      private
+      def set_create_params
+        if params.has_key?(:picture)
+            params[:solution] = JSON.parse(params[:solution])
+            params[:solution][:picture] = params[:picture]
+        end
+      end
 
      def send_notification
-      Notification.create(from_user: current_user.reecher_id, to_user: entry.question.posted_by_uid, message: "#{current_user.full_name}" + PUSH_TITLE_PRSLN, notification_type: "SOLUTION", record_id: entry.question.id)
+      Notification.create(from_user: entry.wrote_by.reecher_id, to_user: entry.question.posted_by_uid, message: "#{current_user.full_name}" + PUSH_TITLE_PRSLN, notification_type: "SOLUTION", record_id: entry.question.id)
     end
 
   end
