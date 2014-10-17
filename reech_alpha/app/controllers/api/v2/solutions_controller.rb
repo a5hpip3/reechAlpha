@@ -1,7 +1,7 @@
 module Api
   module V2
     class SolutionsController < BaseController
-    	before_filter :require_current_user, except: [:create]
+    	before_filter :require_current_user
       before_filter :set_create_params, only: [:create]
     	after_filter :send_notification, only: [:create]
 
