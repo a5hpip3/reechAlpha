@@ -1,7 +1,7 @@
 module Api
 	module V2
 		class ApiUsersController < BaseController
-			before_filter :require_current_user, only: [:friends, :leader_board, :profile, :current_user_profile]
+			before_filter :require_current_user, only: [:friends, :leader_board, :profile, :current_user_profile, :set_device]
 			before_filter :set_params, only: [:update]
 			@model_class = User
 
@@ -37,7 +37,7 @@ module Api
 						user.invite_id = params[:invite_id]
 						user.invite_code = params[:invite_code]
 				end
-				user.set_device(params[:device]) if user
+				#set_device if user
 				user.authorizations.where(provider: "facebook").first_or_create do |auth|
 					auth.provider = "facebook"
 					auth.uid = credentials["id"]
