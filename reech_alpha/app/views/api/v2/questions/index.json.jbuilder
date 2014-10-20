@@ -5,7 +5,7 @@ json.array! questions do |row|
 	posted_by = row.user.full_name
 	posted_by_avatar = row.user.image_url	
 	solution_purchased = row.purchased_solutions.where(user_id = current_user.id).exists?
-	has_conversation = ReechChat.includes('solution').where('solutions.question_id = ?', row.question_id).count > 0 ? true : false
+	has_conversation = !solution_purchased ? false : ReechChat.where('from_user_id = ? or to_user_id=?',current_user.id, current_user.id).includes('solution').where('solutions.question_id = ?', row.question_id).count > 0 ? true : false
 	linked_count = row.linked_questions.find_all_by_linked_by_uid(current_user.reecher_id).count
 	linked = linked_count > 0 ? true : false
 	user_id = row.user.id

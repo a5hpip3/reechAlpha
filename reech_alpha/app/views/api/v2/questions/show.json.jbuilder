@@ -73,9 +73,11 @@ json.solutions do
         	json.previewed  solution.preview_solutions.exists?(user_id: current_user.id)
         	json.profile_pic_clickable true
           json.purchased   false
+          json.has_conversation solution.reech_chats.where('from_user_id = ? or to_user_id=?',current_user.id, current_user.id).count > 0 ? true : false
         	json.body solution.body
         	json.hi5_count solution.count_votes_up
         	json.current_user_is_solver current_user.reecher_id == solution.solver_id
+          json.current_user_voted_up_on current_user.voted_up_on? solution
           if solution_type.to_s == "purchased_solutions"
             json.purchased   true
           end
@@ -90,7 +92,6 @@ json.solutions do
                 if !current_user_is_audien && (current_user.reecher_id != question.posted_by_uid)
                   json.solver "Friend"
                   json.solver_image nil
-                  json.image_url nil
                   json.profile_pic_clickable false
                 end
               end
@@ -99,7 +100,6 @@ json.solutions do
           if solution_type.to_s == "solutions_by_friends"
             json.solver "Friend"
             json.solver_image nil
-            json.image_url nil
             json.profile_pic_clickable false
           end
           if solution_type.to_s == "solutions_by_others"
@@ -110,12 +110,10 @@ json.solutions do
               json.solver_id linker.id
               json.solver_image linker.image_url
               json.solver "Friend of #{linker.full_name}"
-              json.image_url linker.image_url
               json.profile_pic_clickable true
             else
               json.solver "Friend of Friend"
               json.solver_image nil
-              json.image_url nil
               json.profile_pic_clickable false
             end
           end

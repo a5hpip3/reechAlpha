@@ -31,8 +31,8 @@ module Api
 
       def solution_hi5
         solution = Solution.find(params[:solution_id])
-        solution.liked_by(current_user)        
-        solution.disliked_by(current_user) unless solution.vote_registered?
+        solution.liked_by(current_user)  unless current_user.voted_up_on? solution
+        #solution.disliked_by(current_user) unless solution.vote_registered?
         Notification.create(from_user: current_user.reecher_id, to_user: solution.wrote_by.reecher_id, message: "#{current_user.full_name}" + PUSH_TITLE_HGHFV, notification_type: "HI5", record_id: solution.question.id) if solution.vote_registered?
         render status: 200, json: {hi5_count: solution.count_votes_up}
       end
