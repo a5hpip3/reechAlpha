@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140926125416) do
+ActiveRecord::Schema.define(:version => 20141021060520) do
 
   create_table "api_keys", :force => true do |t|
     t.string   "access_token"
@@ -349,6 +349,7 @@ ActiveRecord::Schema.define(:version => 20140926125416) do
     t.datetime "picture_updated_at"
     t.string   "location"
     t.string   "profile_pic_path"
+    t.text     "blurb"
   end
 
   add_index "user_profiles", ["reecher_id"], :name => "index_user_profiles_on_reecher_id"

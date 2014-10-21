@@ -78,8 +78,10 @@ module Api
 				params[:user][:user_profile_attributes] = {}
 				params[:user][:user_profile_attributes][:id] = params[:user][:profile_id]
 				params[:user][:user_profile_attributes][:location] = params[:user][:location]
+				params[:user][:user_profile_attributes][:blurb] = params[:user][:blurb]
 				params[:user][:user_profile_attributes][:picture] = params[:file]
 				params[:user].delete(:location)
+				params[:user].delete(:blurb)
 				params[:user].delete(:profile_id)
 			end
 

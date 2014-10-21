@@ -5,6 +5,7 @@ json.social_user @user.authorizations.empty? ? false : true
 json.curio_points  @user.points
 json.high_fives @user.user_profile.votes_for.count
 json.location @user.user_profile.location
+json.blurb @user.user_profile.blurb
 json.full_name @user.full_name
 json.connections_count @user.friends.count
 json.phone_number @user.phone_number
