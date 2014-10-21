@@ -216,22 +216,34 @@ class User < ActiveRecord::Base
   def has_device_notifications_enabled?(linked_type)
   	case linked_type
   	when "LINKED"
-  		(user_settings.pushnotif_is_enabled && user_settings.notify_linked_to_question)
+  		(user_settings.message_settings.include?(:linked_to_new) && user_settings.message_settings[:linked_to_new])
   	when "ASK"
-  		(user_settings.pushnotif_is_enabled && user_settings.notify_audience_if_ask_for_help)
-  	when "INVITE"
-  		user_settings.pushnotif_is_enabled
+  		(user_settings.message_settings.include?(:friend_asks_help) && user_settings.message_settings[:friend_asks_help])
+  	when "HI5"
+  		(user_settings.message_settings.include?(:solution_gets_hi5) && user_settings.message_settings[:solution_gets_hi5])
+	when "SOLUTION"
+		(user_settings.message_settings.include?(:question_gets_answer) && user_settings.message_settings[:question_gets_answer])  		
+	when "STARANSW"
+		(user_settings.message_settings.include?(:stared_question_gets_answer) && user_settings.message_settings[:stared_question_gets_answer])
+	when "GRABSOL"
+		(user_settings.message_settings.include?(:some_one_grabs_my_solution) && user_settings.message_settings[:some_one_grabs_my_solution])
   	end
   end
 
   def has_email_notifications_enabled?(linked_type)
   	case linked_type
   	when "LINKED"
-  		(user_settings.emailnotif_is_enabled && user_settings.notify_linked_to_question)
+  		(user_settings.email_settings.include?(:linked_to_new) && user_settings.email_settings[:linked_to_new])
   	when "ASK"
-  		(user_settings.emailnotif_is_enabled && user_settings.notify_audience_if_ask_for_help)
-  	when "INVITE"
-  		user_settings.emailnotif_is_enabled
+  		(user_settings.email_settings.include?(:friend_asks_help) && user_settings.email_settings[:friend_asks_help])
+  	when "HI5"
+  		(user_settings.email_settings.include?(:solution_gets_hi5) && user_settings.email_settings[:solution_gets_hi5])
+	when "SOLUTION"
+		(user_settings.email_settings.include?(:question_gets_answer) && user_settings.email_settings[:question_gets_answer])  		
+	when "STARANSW"
+		(user_settings.email_settings.include?(:stared_question_gets_answer) && user_settings.email_settings[:stared_question_gets_answer])
+	when "GRABSOL"
+		(user_settings.email_settings.include?(:some_one_grabs_my_solution) && user_settings.email_settings[:some_one_grabs_my_solution])
   	end
   end
 

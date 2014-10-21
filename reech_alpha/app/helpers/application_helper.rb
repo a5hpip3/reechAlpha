@@ -4,7 +4,7 @@ module ApplicationHelper
     mailbox_name == 'inbox' ? message.sender : message.recipient_list.join(', ')
   end
 
-  def send_device_notification device_token,message,platform,title="Title"
+  def send_device_notification device_token, message, platform, title="Title"
     if platform == 'iOS'
       n1= APNS::Notification.new(device_token, :alert => title, :badge => 1, :sound => 'default',:other=>{:message=>message,:title=>title,:badge => 1})
       APNS.send_notifications([n1])
@@ -15,7 +15,7 @@ module ApplicationHelper
       #for testing  locally
       #gcm = GCM.new("AIzaSyC98sLFibOitkGdBjGPfQTWfLochak7v6E")
       registration_ids= [device_token] # an array of one or more client registration IDs
-      options = {data: {payload_body:message ,message: title ,title:"Reech", msgcnt: '3'}, collapse_key: "Reech",time_to_live:3600}
+      options = {data: {payload_body:message ,message: title ,title:"Reech"}, collapse_key: "Reech",time_to_live:3600}
       response = gcm.send_notification(registration_ids, options)
       puts response
     end

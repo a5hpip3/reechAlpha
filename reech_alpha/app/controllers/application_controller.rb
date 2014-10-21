@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   #protect_from_forgery
   helper_method :require_user, :fb_user, :recipients
   before_filter :add_common_headers #Filter for add response headers for all JSON API calls
-  before_filter :log_request_data
+  #before_filter :log_request_data
 
 
   private
