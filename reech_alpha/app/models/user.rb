@@ -110,6 +110,10 @@ class User < ActiveRecord::Base
 	after_create :assign_points, :set_friendships, :set_user_picture
 
 
+	def sent_requests
+		LinkedQuestion.includes(:invite_users).where("linked_questions.linked_by_uid = ? AND invite_users.status = ?", self.reecher_id, true)
+	end
+
     def set_user_picture
       unless picture.nil?
         self.user_profile.picture = picture

@@ -68,6 +68,10 @@ module Api
 				render json: {status: 200, message: "success"}
 			end
 
+			def sent_requests
+				render json: current_user.sent_requests
+			end
+
 			private
 
 			def set_params
