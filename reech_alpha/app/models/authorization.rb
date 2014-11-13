@@ -5,7 +5,7 @@ class Authorization < ActiveRecord::Base
 
   attr_accessor :access_token
 
-  after_create :set_friendships
+  #after_create :set_friendships
 
   def set_friendships
     graph = Koala::Facebook::API.new(self.access_token)
