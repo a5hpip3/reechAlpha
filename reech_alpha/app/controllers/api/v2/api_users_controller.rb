@@ -48,8 +48,8 @@ module Api
 				friends = User.where(id: (Authorization.where(provider: "facebook", uid: friends.collect{|f| f["id"]})).collect(&:id))
 				friends.each do |friend|
 					unless user.friends.collect(&:id).include?(friend.id)
-						self.user.friendships.create(friend_reecher_id: friend.reecher_id, status: 'accepted')
-						friend.friendships.create(friend_reecher_id: self.user.reecher_id, status: 'accepted')
+						user.friendships.create(friend_reecher_id: friend.reecher_id, status: 'accepted')
+						friend.friendships.create(friend_reecher_id: user.reecher_id, status: 'accepted')
 					end
 				end
 				# Pending update profile and make connections.
